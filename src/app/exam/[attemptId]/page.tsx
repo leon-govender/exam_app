@@ -1,0 +1,56 @@
+import { notFound, redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
+import { getCurrentUser } from "@/lib/queries";
+import { ExamClient } from "./ExamClient";
+
+export default async function ExamPage({
+  params,
+}: {
+  params: Promise<{ attemptId: string }>;
+}) {
+  const { attemptId } = await params;
+  const user = await getCurrentUser();
+  if (!user) redirect("/login");
+
+  const supabase = await createClient();
+
+  const { data: attempt } = await supabase
+    .from("attempts")
+    .select("id, user_id, paper_id, submitted_at")
+    .eq("id", attemptId)
+    .single();
+
+  if (!attempt || attempt.user_id !== user.id) notFound();
+  if (attempt.submitted_at) redirect(`/results/${attemptId}`);
+
+  const { data: paper } = await supabase
+    .from("papers")
+    .select("*")
+    .eq("id", attempt.paper_id)
+    .single();
+  if (!paper) notFound();
+
+  const { data: subject } = await supabase
+    .from("subjects")
+    .select("name")
+    .eq("id", paper.subject_id)
+    .single();
+
+  const { data: questions } = await supabase
+    .from("questions")
+    .select("id, number, sub_number, text, marks, order_index")
+    .eq("paper_id", attempt.paper_id)
+    .order("order_index");
+
+  return (
+    <ExamClient
+      attemptId={attemptId}
+      paper={{
+        title: `${subject?.name ?? ""} ${paper.paper_number} — ${paper.exam_diet} ${paper.year}`,
+        durationMinutes: paper.duration_minutes,
+        totalMarks: paper.total_marks,
+      }}
+      questions={questions ?? []}
+    />
+  );
+}
