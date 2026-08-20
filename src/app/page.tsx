@@ -79,9 +79,11 @@ export default async function DashboardPage() {
                     />
                   </div>
                   <div className="flex items-center justify-between text-xs text-ink-2">
-                    <span>{r?.papersAttempted ?? 0} papers sat</span>
+                    <span>
+                      {r?.papersAttempted ?? 0} paper{r?.papersAttempted === 1 ? "" : "s"} sat
+                    </span>
                     <span className={`rounded-full px-2 py-0.5 font-mono text-[10px] ${pill.cls}`}>
-                      {pct > 0 && r ? `${r.gapCount} gaps` : pill.label}
+                      {pct > 0 && r ? `${r.gapCount} gap${r.gapCount === 1 ? "" : "s"}` : pill.label}
                     </span>
                   </div>
                 </div>
