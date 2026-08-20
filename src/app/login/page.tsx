@@ -43,7 +43,7 @@ export default function LoginPage() {
     setError(null);
 
     const supabase = createClient();
-    const { error } = await supabase.auth.verifyOtp({ email, token: code, type: "email" });
+    const { error } = await supabase.auth.verifyOtp({ email, token: code, type: "magiclink" });
 
     if (error) {
       setStatus("sent");
@@ -72,14 +72,14 @@ export default function LoginPage() {
             <div className="rounded-lg border border-border bg-paper-2 p-4 text-sm text-ink-2">
               Check <b className="text-ink">{email}</b>. If the link in that email doesn&apos;t
               sign you in (some email apps &quot;click&quot; links automatically before you do,
-              which uses them up), enter the 6-digit code from the same email below instead.
+              which uses them up), enter the code from the same email below instead.
             </div>
             <form onSubmit={handleVerifyCode} className="flex flex-col gap-3">
               <input
                 type="text"
                 inputMode="numeric"
                 required
-                placeholder="123456"
+                placeholder="12345678"
                 value={code}
                 onChange={(e) => setCode(e.target.value)}
                 className="rounded-lg border border-border bg-card px-4 py-3 text-center font-mono text-lg tracking-widest outline-none focus:border-gold"
