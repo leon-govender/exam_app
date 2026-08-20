@@ -27,13 +27,15 @@ import type { MarkingPoint } from "../../src/lib/grader";
 // Successful, Solutions for All / Macmillan, Study & Master, Focus, etc.),
 // so a citation to any one of them only helps a student whose school
 // issued that specific book. The DBE's own free "Mind the Gap" study
-// guides are the one resource every matric Geography student can use
+// guide is the one resource every matric Geography student can use
 // regardless of which textbook their school has — CAPS-aligned, official,
-// no login or purchase required. Swap this for your son's actual textbook
-// (with real chapter/page numbers, once you've checked them against his
-// copy) if you'd rather point there instead.
+// no login or purchase required. This is the direct PDF download (verified
+// live, ~23MB, dated 18 Sept 2014 — the current edition as of writing).
+// Swap this for your son's actual textbook (with real chapter/page
+// numbers, once you've checked them against his copy) if you'd rather
+// point there instead.
 const MIND_THE_GAP_URL =
-  "https://www.education.gov.za/Curriculum/LearningandTeachingSupportMaterials(LTSM)/MindtheGapStudyGuides.aspx";
+  "https://www.education.gov.za/Portals/0/Documents/Manuals/3b%20MTG%20Geog%20EN%2018%20Sept%202014.pdf";
 
 export const subject = {
   name: "Geography",
