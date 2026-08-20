@@ -12,6 +12,21 @@ export async function logout() {
   redirect("/login");
 }
 
+/**
+ * Verifying via a server action (not a client-side call + manual navigate)
+ * so the session cookie is set in the same request/response cycle that
+ * redirects — a client-side verifyOtp() followed by window.location.href
+ * raced the cookie write against the next request and lost.
+ */
+export async function verifySignInCode(email: string, token: string) {
+  const supabase = await createClient();
+  const { error } = await supabase.auth.verifyOtp({ email, token, type: "magiclink" });
+  if (error) {
+    return { error: error.message };
+  }
+  redirect("/");
+}
+
 export async function startAttempt(paperId: string) {
   const supabase = await createClient();
   const {

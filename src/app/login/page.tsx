@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { verifySignInCode } from "@/app/actions";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -42,14 +43,14 @@ export default function LoginPage() {
     setStatus("verifying");
     setError(null);
 
-    const supabase = createClient();
-    const { error } = await supabase.auth.verifyOtp({ email, token: code, type: "magiclink" });
-
-    if (error) {
+    // On success this redirects server-side and never returns (the
+    // redirect() call throws internally; Next's client runtime handles the
+    // navigation) — cookie gets set in the same response, no race with a
+    // client-side verify + manual navigate.
+    const result = await verifySignInCode(email, code);
+    if (result?.error) {
       setStatus("sent");
-      setError(error.message);
-    } else {
-      window.location.href = "/";
+      setError(result.error);
     }
   }
 
