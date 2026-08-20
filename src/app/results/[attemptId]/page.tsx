@@ -110,7 +110,7 @@ export default async function ResultsPage({
                   <div className="mb-1 flex items-baseline justify-between">
                     <span className="text-sm font-semibold">{topic.topicName}</span>
                     <span className="font-mono text-xs text-mark-red">
-                      {topic.marksAwarded}/{topic.marksPossible} lost
+                      {topic.marksPossible - topic.marksAwarded}/{topic.marksPossible} lost
                     </span>
                   </div>
                   <p className="text-xs text-ink-2">
