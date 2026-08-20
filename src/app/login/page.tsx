@@ -5,10 +5,13 @@ import { createClient } from "@/lib/supabase/client";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
-  const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
+  const [code, setCode] = useState("");
+  const [status, setStatus] = useState<"idle" | "sending" | "sent" | "verifying" | "error">(
+    "idle",
+  );
   const [error, setError] = useState<string | null>(null);
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSendLink(e: React.FormEvent) {
     e.preventDefault();
     setStatus("sending");
     setError(null);
@@ -34,6 +37,22 @@ export default function LoginPage() {
     }
   }
 
+  async function handleVerifyCode(e: React.FormEvent) {
+    e.preventDefault();
+    setStatus("verifying");
+    setError(null);
+
+    const supabase = createClient();
+    const { error } = await supabase.auth.verifyOtp({ email, token: code, type: "email" });
+
+    if (error) {
+      setStatus("sent");
+      setError(error.message);
+    } else {
+      window.location.href = "/";
+    }
+  }
+
   return (
     <div className="flex flex-1 items-center justify-center px-6">
       <div className="w-full max-w-sm">
@@ -44,16 +63,39 @@ export default function LoginPage() {
           Sign in
         </h1>
         <p className="mb-8 text-sm leading-relaxed text-ink-2">
-          Enter the email this MatricPrep account uses. We&apos;ll send a sign-in link — no
-          password to remember.
+          Enter the email this MatricPrep account uses. We&apos;ll send a sign-in link and code
+          — no password to remember.
         </p>
 
-        {status === "sent" ? (
-          <div className="rounded-lg border border-border bg-paper-2 p-4 text-sm text-ink-2">
-            Check <b className="text-ink">{email}</b> for a sign-in link.
+        {status === "sent" || status === "verifying" ? (
+          <div className="flex flex-col gap-4">
+            <div className="rounded-lg border border-border bg-paper-2 p-4 text-sm text-ink-2">
+              Check <b className="text-ink">{email}</b>. If the link in that email doesn&apos;t
+              sign you in (some email apps &quot;click&quot; links automatically before you do,
+              which uses them up), enter the 6-digit code from the same email below instead.
+            </div>
+            <form onSubmit={handleVerifyCode} className="flex flex-col gap-3">
+              <input
+                type="text"
+                inputMode="numeric"
+                required
+                placeholder="123456"
+                value={code}
+                onChange={(e) => setCode(e.target.value)}
+                className="rounded-lg border border-border bg-card px-4 py-3 text-center font-mono text-lg tracking-widest outline-none focus:border-gold"
+              />
+              <button
+                type="submit"
+                disabled={status === "verifying"}
+                className="rounded-lg bg-ink px-4 py-3 text-sm font-semibold text-paper disabled:opacity-60"
+              >
+                {status === "verifying" ? "Verifying…" : "Verify code"}
+              </button>
+              {error && <p className="text-sm text-mark-red">{error}</p>}
+            </form>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+          <form onSubmit={handleSendLink} className="flex flex-col gap-3">
             <input
               type="email"
               required
