@@ -1,6 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentUser } from "@/lib/queries";
+import { formatExamDiet } from "@/lib/format";
 import { ExamClient } from "./ExamClient";
 
 export default async function ExamPage({
@@ -38,19 +39,32 @@ export default async function ExamPage({
 
   const { data: questions } = await supabase
     .from("questions")
-    .select("id, number, sub_number, text, marks, order_index")
+    .select("id, number, sub_number, text, marks, order_index, topic_id")
     .eq("paper_id", attempt.paper_id)
     .order("order_index");
+
+  const topicIds = [...new Set((questions ?? []).map((q) => q.topic_id).filter(Boolean))] as string[];
+  const { data: topics } = topicIds.length
+    ? await supabase.from("topics").select("id, name").in("id", topicIds)
+    : { data: [] };
+  const topicNameById = new Map((topics ?? []).map((t) => [t.id, t.name]));
+
+  const questionsWithTopic = (questions ?? []).map((q) => ({
+    ...q,
+    topicName: q.topic_id ? (topicNameById.get(q.topic_id) ?? null) : null,
+  }));
 
   return (
     <ExamClient
       attemptId={attemptId}
       paper={{
+        subjectPaper: `${subject?.name ?? ""} ${paper.paper_number}`,
+        diet: formatExamDiet(paper.exam_diet, paper.year),
         title: `${subject?.name ?? ""} ${paper.paper_number} — ${paper.exam_diet} ${paper.year}`,
         durationMinutes: paper.duration_minutes,
         totalMarks: paper.total_marks,
       }}
-      questions={questions ?? []}
+      questions={questionsWithTopic}
     />
   );
 }

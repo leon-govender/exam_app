@@ -6,6 +6,7 @@ import { FrameChrome } from "@/components/FrameChrome";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentUser } from "@/lib/queries";
 import { getAttemptReport } from "@/lib/gap-analysis";
+import { formatExamDiet } from "@/lib/format";
 
 function barColor(pct: number) {
   if (pct < 50) return "var(--mark-red)";
@@ -56,13 +57,14 @@ export default async function ResultsPage({
           className="overflow-hidden rounded-2xl border border-border bg-card"
           style={{ boxShadow: "var(--shadow)" }}
         >
-          <FrameChrome />
+          <FrameChrome
+            label={
+              paper
+                ? `results: ${subject?.name ?? ""} ${paper.paper_number} · ${formatExamDiet(paper.exam_diet, paper.year)}`
+                : undefined
+            }
+          />
           <div className="p-6 sm:p-8">
-          <p className="mb-1 text-sm text-ink-2">
-            {paper
-              ? `${subject?.name ?? ""} ${paper.paper_number} — ${paper.exam_diet} ${paper.year}`
-              : ""}
-          </p>
           <div className="mb-10 flex items-baseline gap-3">
             <span className="font-[family-name:var(--font-display)] text-4xl tabular-nums">
               {report.marksAwarded}
