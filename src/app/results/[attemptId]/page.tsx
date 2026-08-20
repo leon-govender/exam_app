@@ -87,7 +87,7 @@ export default async function ResultsPage({
         </p>
         <div className="mb-10 grid grid-cols-2 gap-2 sm:grid-cols-4">
           {report.cognitiveLevels.map((c) => (
-            <div key={c.levelId} className="rounded-lg border border-border p-3 text-center">
+            <div key={c.levelId} className="rounded-lg border border-border bg-card p-3 text-center">
               <div className={`font-mono text-lg tabular-nums ${textColor(c.pct)}`}>{c.pct}%</div>
               <div className="mt-1 text-[11px] leading-tight text-ink-2">{c.levelName}</div>
             </div>
@@ -104,7 +104,7 @@ export default async function ResultsPage({
                 <Link
                   key={topic.topicId}
                   href={`/study/${topic.topicId}`}
-                  className="block rounded-lg border border-border border-l-[3px] p-4 hover:border-l-mark-red"
+                  className="block rounded-lg border border-border border-l-[3px] bg-card p-4 hover:border-l-mark-red"
                   style={{ borderLeftColor: "var(--mark-red)" }}
                 >
                   <div className="mb-1 flex items-baseline justify-between">

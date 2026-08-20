@@ -26,6 +26,13 @@ function daysUntil(dateStr: string): number {
   return Math.round((target.getTime() - today.getTime()) / 86_400_000);
 }
 
+function greeting(): string {
+  const hour = new Date().getHours();
+  if (hour < 12) return "Good morning";
+  if (hour < 18) return "Good afternoon";
+  return "Good evening";
+}
+
 export default async function DashboardPage() {
   const user = await getCurrentUser();
   if (!user) redirect("/login");
@@ -53,6 +60,10 @@ export default async function DashboardPage() {
     <div className="flex flex-1 flex-col">
       <AppHeader />
       <main className="mx-auto w-full max-w-3xl flex-1 px-6 py-10">
+        <p className="mb-6 font-[family-name:var(--font-display)] text-lg font-semibold">
+          {greeting()}
+        </p>
+
         {nextExam && (
           <div className="mb-6 flex justify-end">
             <span className="rounded-full bg-mark-red-soft px-3 py-1.5 font-mono text-xs text-mark-red">
@@ -90,7 +101,7 @@ export default async function DashboardPage() {
               const pct = r?.overallPct ?? 0;
               const pill = severityPill(pct);
               return (
-                <div key={s.id} className="rounded-lg border border-border p-4">
+                <div key={s.id} className="rounded-lg border border-border bg-card p-4">
                   <div className="mb-2 flex items-start justify-between">
                     <span className="text-sm font-semibold">{s.name}</span>
                     <span className="font-mono text-xl tabular-nums">{pct}%</span>
@@ -146,7 +157,7 @@ export default async function DashboardPage() {
                     <Link
                       key={t.topicId}
                       href={`/study/${t.topicId}`}
-                      className="flex items-center justify-between rounded-lg border border-border px-4 py-3 text-sm hover:border-gold"
+                      className="flex items-center justify-between rounded-lg border border-border bg-card px-4 py-3 text-sm hover:border-gold"
                     >
                       <span>{t.topicName}</span>
                       <span className="font-mono text-xs text-mark-red">{t.pct}%</span>

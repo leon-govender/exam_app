@@ -112,7 +112,7 @@ export default async function StudyPage({
               href={topic.textbook_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-start gap-3 rounded-lg border border-border p-3.5 hover:border-gold"
+              className="flex items-start gap-3 rounded-lg border border-border bg-card p-3.5 hover:border-gold"
             >
               <span className="flex-shrink-0 rounded bg-gold-soft px-2 py-1 font-mono text-[10px] uppercase tracking-wide text-gold-deep">
                 Textbook
@@ -121,7 +121,7 @@ export default async function StudyPage({
             </a>
           )}
           {topic.textbook_ref && !topic.textbook_url && (
-            <div className="flex items-start gap-3 rounded-lg border border-border p-3.5">
+            <div className="flex items-start gap-3 rounded-lg border border-border bg-card p-3.5">
               <span className="flex-shrink-0 rounded bg-gold-soft px-2 py-1 font-mono text-[10px] uppercase tracking-wide text-gold-deep">
                 Textbook
               </span>
@@ -133,7 +133,7 @@ export default async function StudyPage({
               href={topic.video_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-start gap-3 rounded-lg border border-border p-3.5 hover:border-gold"
+              className="flex items-start gap-3 rounded-lg border border-border bg-card p-3.5 hover:border-gold"
             >
               <span className="flex-shrink-0 rounded bg-gold-soft px-2 py-1 font-mono text-[10px] uppercase tracking-wide text-gold-deep">
                 Video
@@ -144,7 +144,7 @@ export default async function StudyPage({
             </a>
           )}
           {practiceQuestions.length > 0 && (
-            <div className="flex items-start gap-3 rounded-lg border border-border p-3.5">
+            <div className="flex items-start gap-3 rounded-lg border border-border bg-card p-3.5">
               <span className="flex-shrink-0 rounded bg-gold-soft px-2 py-1 font-mono text-[10px] uppercase tracking-wide text-gold-deep">
                 Practice
               </span>
