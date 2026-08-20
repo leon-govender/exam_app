@@ -54,13 +54,10 @@ export default async function DashboardPage() {
       <AppHeader />
       <main className="mx-auto w-full max-w-3xl flex-1 px-6 py-10">
         {nextExam && (
-          <div className="mb-6 flex items-center justify-between rounded-lg border border-border bg-paper-2 px-4 py-3">
-            <span className="text-sm">
-              <b className="font-mono text-mark-red">{daysUntil(nextExam.examDate)} days</b> to{" "}
-              {nextExam.subjectName} {nextExam.paperNumber} (
-              {nextExam.examType === "final" ? "Final" : "Prelim"})
-            </span>
-            <span className="font-mono text-xs text-ink-2">
+          <div className="mb-6 flex justify-end">
+            <span className="rounded-full bg-mark-red-soft px-3 py-1.5 font-mono text-xs text-mark-red">
+              {daysUntil(nextExam.examDate)} days to {nextExam.subjectName} {nextExam.paperNumber}{" "}
+              ({nextExam.examType === "final" ? "Final" : "Prelim"}) ·{" "}
               {new Date(nextExam.examDate + "T00:00:00").toLocaleDateString("en-ZA", {
                 weekday: "short",
                 day: "numeric",

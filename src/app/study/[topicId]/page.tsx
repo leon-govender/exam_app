@@ -4,6 +4,15 @@ import { createClient } from "@/lib/supabase/server";
 import { getCurrentUser } from "@/lib/queries";
 import { scheduleRetest } from "@/app/actions";
 
+function videoSearchLabel(url: string, fallback: string): string {
+  try {
+    const query = new URL(url).searchParams.get("search_query");
+    return query ? query.replace(/\+/g, " ") : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
 export default async function StudyPage({
   params,
 }: {
@@ -129,7 +138,9 @@ export default async function StudyPage({
               <span className="flex-shrink-0 rounded bg-gold-soft px-2 py-1 font-mono text-[10px] uppercase tracking-wide text-gold-deep">
                 Video
               </span>
-              <span className="text-sm underline">{topic.video_url}</span>
+              <span className="text-sm underline">
+                Search YouTube: {videoSearchLabel(topic.video_url, topic.name)}
+              </span>
             </a>
           )}
           {practiceQuestions.length > 0 && (
