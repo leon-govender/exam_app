@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { AppHeader } from "@/components/AppHeader";
-import { getCurrentUser, getSubjects, getNextUnattemptedPaper } from "@/lib/queries";
+import { getCurrentUser, getSubjects, getNextUnattemptedPaper, getNextExam } from "@/lib/queries";
 import { getSubjectReadiness } from "@/lib/gap-analysis";
 import { startAttempt } from "@/app/actions";
 
@@ -19,12 +19,20 @@ function barColor(pct: number) {
   return "var(--mastered)";
 }
 
+function daysUntil(dateStr: string): number {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const target = new Date(dateStr + "T00:00:00");
+  return Math.round((target.getTime() - today.getTime()) / 86_400_000);
+}
+
 export default async function DashboardPage() {
   const user = await getCurrentUser();
   if (!user) redirect("/login");
 
   const subjects = await getSubjects();
   const readiness = await getSubjectReadiness(user.id);
+  const nextExam = await getNextExam();
 
   const weakest = subjects
     .map((s) => ({ subject: s, pct: readiness[s.id]?.overallPct ?? 0 }))
@@ -45,6 +53,24 @@ export default async function DashboardPage() {
     <div className="flex flex-1 flex-col">
       <AppHeader />
       <main className="mx-auto w-full max-w-3xl flex-1 px-6 py-10">
+        {nextExam && (
+          <div className="mb-6 flex items-center justify-between rounded-lg border border-border bg-paper-2 px-4 py-3">
+            <span className="text-sm">
+              <b className="font-mono text-mark-red">{daysUntil(nextExam.examDate)} days</b> to{" "}
+              {nextExam.subjectName} {nextExam.paperNumber} (
+              {nextExam.examType === "final" ? "Final" : "Prelim"})
+            </span>
+            <span className="font-mono text-xs text-ink-2">
+              {new Date(nextExam.examDate + "T00:00:00").toLocaleDateString("en-ZA", {
+                weekday: "short",
+                day: "numeric",
+                month: "short",
+              })}
+              {nextExam.startTime && ` · ${nextExam.startTime.slice(0, 5)}`}
+            </span>
+          </div>
+        )}
+
         <div className="mb-8 flex items-baseline justify-between">
           <span className="text-sm text-ink-2">Overall readiness</span>
           <span className="font-[family-name:var(--font-display)] text-lg">{overallPct}%</span>

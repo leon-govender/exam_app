@@ -53,6 +53,46 @@ export async function getNextUnattemptedPaper(userId: string, subjectId: string)
   return papers.find((p) => !attemptedIds.has(p.id)) ?? papers[0];
 }
 
+export interface UpcomingExam {
+  subjectId: string;
+  subjectName: string;
+  paperNumber: string;
+  examType: string;
+  examDate: string;
+  startTime: string | null;
+}
+
+/** The soonest exam_schedule entry that hasn't happened yet, across all subjects. */
+export async function getNextExam(): Promise<UpcomingExam | null> {
+  const supabase = await createClient();
+  const today = new Date().toISOString().slice(0, 10);
+
+  const { data, error } = await supabase
+    .from("exam_schedule")
+    .select("subject_id, paper_number, exam_type, exam_date, start_time")
+    .gte("exam_date", today)
+    .order("exam_date", { ascending: true })
+    .limit(1)
+    .maybeSingle();
+  if (error) throw error;
+  if (!data) return null;
+
+  const { data: subject } = await supabase
+    .from("subjects")
+    .select("name")
+    .eq("id", data.subject_id)
+    .single();
+
+  return {
+    subjectId: data.subject_id,
+    subjectName: subject?.name ?? "",
+    paperNumber: data.paper_number,
+    examType: data.exam_type,
+    examDate: data.exam_date,
+    startTime: data.start_time,
+  };
+}
+
 export async function getPaperWithQuestions(paperId: string) {
   const supabase = await createClient();
   const { data: paper, error: paperErr } = await supabase

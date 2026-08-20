@@ -9,6 +9,7 @@ import {
   topics,
   paper,
   questions,
+  examSchedule,
 } from "./seed-data/geography-p1-pilot";
 
 async function main() {
@@ -172,6 +173,33 @@ async function main() {
         },
         { onConflict: "question_id" },
       );
+  }
+
+  console.log("Seeding exam schedule");
+  for (const ex of examSchedule) {
+    const { data: existingEx } = await supabase
+      .from("exam_schedule")
+      .select("id")
+      .eq("subject_id", subjectId)
+      .eq("paper_number", ex.paperNumber)
+      .eq("exam_type", ex.examType)
+      .maybeSingle();
+
+    const row = {
+      subject_id: subjectId,
+      paper_number: ex.paperNumber,
+      exam_type: ex.examType,
+      exam_date: ex.examDate,
+      start_time: ex.startTime,
+      duration_minutes: ex.durationMinutes,
+    };
+
+    if (existingEx) {
+      await supabase.from("exam_schedule").update(row).eq("id", existingEx.id);
+    } else {
+      const { error } = await supabase.from("exam_schedule").insert(row);
+      if (error) throw error;
+    }
   }
 
   console.log("Done. Geography P1 pilot paper seeded.");

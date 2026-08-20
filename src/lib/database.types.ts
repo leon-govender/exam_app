@@ -175,6 +175,28 @@ export interface Database {
         Update: Partial<Database["public"]["Tables"]["study_actions"]["Insert"]>;
         Relationships: [];
       };
+      exam_schedule: {
+        Row: {
+          id: string;
+          subject_id: string;
+          paper_number: string;
+          exam_type: string;
+          exam_date: string;
+          start_time: string | null;
+          duration_minutes: number | null;
+        };
+        Insert: {
+          id?: string;
+          subject_id: string;
+          paper_number: string;
+          exam_type: string;
+          exam_date: string;
+          start_time?: string | null;
+          duration_minutes?: number | null;
+        };
+        Update: Partial<Database["public"]["Tables"]["exam_schedule"]["Insert"]>;
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;

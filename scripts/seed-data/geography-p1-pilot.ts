@@ -84,6 +84,19 @@ export const topics = [
   },
 ];
 
+// Real dates, not placeholders. Prelim dates: Parktown Boys' High School
+// Preparatory Examination Timetable 2026 (school-issued PDF, confirmed
+// 2026-08-20). Final P2 date: official DBE Oct/Nov 2026 NSC timetable PDF
+// (confirmed). Final P1 is deliberately omitted — couldn't be reliably
+// extracted from that PDF's table layout and a third-party blog's guess
+// checked out wrong against the source; add it once confirmed rather than
+// show a guessed date. See README.md "Still to do".
+export const examSchedule = [
+  { paperNumber: "P1", examType: "prelim" as const, examDate: "2026-09-02", startTime: "09:00", durationMinutes: 180 },
+  { paperNumber: "P2", examType: "prelim" as const, examDate: "2026-09-09", startTime: "09:00", durationMinutes: 180 },
+  { paperNumber: "P2", examType: "final" as const, examDate: "2026-11-12", startTime: "14:00", durationMinutes: 180 },
+];
+
 export const paper = {
   year: 2023,
   exam_diet: "November (pilot excerpt)",
