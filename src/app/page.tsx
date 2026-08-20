@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { AppHeader } from "@/components/AppHeader";
+import { Explainer } from "@/components/Explainer";
+import { FrameChrome } from "@/components/FrameChrome";
 import { getCurrentUser, getSubjects, getNextUnattemptedPaper, getNextExam } from "@/lib/queries";
 import { getSubjectReadiness } from "@/lib/gap-analysis";
 import { startAttempt } from "@/app/actions";
@@ -60,112 +62,126 @@ export default async function DashboardPage() {
     <div className="flex flex-1 flex-col">
       <AppHeader />
       <main className="mx-auto w-full max-w-3xl flex-1 px-6 py-10">
-        <p className="mb-6 font-[family-name:var(--font-display)] text-lg font-semibold">
-          {greeting()}
-        </p>
-
-        {nextExam && (
-          <div className="mb-6 flex justify-end">
-            <span className="rounded-full bg-mark-red-soft px-3 py-1.5 font-mono text-xs text-mark-red">
-              {daysUntil(nextExam.examDate)} days to {nextExam.subjectName} {nextExam.paperNumber}{" "}
-              ({nextExam.examType === "final" ? "Final" : "Prelim"}) ·{" "}
-              {new Date(nextExam.examDate + "T00:00:00").toLocaleDateString("en-ZA", {
-                weekday: "short",
-                day: "numeric",
-                month: "short",
-              })}
-              {nextExam.startTime && ` · ${nextExam.startTime.slice(0, 5)}`}
-            </span>
-          </div>
-        )}
-
-        <div className="mb-8 flex items-baseline justify-between">
-          <span className="text-sm text-ink-2">Overall readiness</span>
-          <span className="font-[family-name:var(--font-display)] text-lg">{overallPct}%</span>
-        </div>
-        <div className="mb-10 h-2 overflow-hidden rounded-full bg-paper-3">
-          <div
-            className="h-full rounded-full"
-            style={{ width: `${overallPct}%`, background: "var(--gold)" }}
-          />
-        </div>
-
-        {subjects.length === 0 ? (
-          <p className="text-sm text-ink-2">
-            No subjects yet — seed the database with a subject and paper to get started.
-          </p>
-        ) : (
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            {subjects.map((s) => {
-              const r = readiness[s.id];
-              const pct = r?.overallPct ?? 0;
-              const pill = severityPill(pct);
-              return (
-                <div key={s.id} className="rounded-lg border border-border bg-card p-4">
-                  <div className="mb-2 flex items-start justify-between">
-                    <span className="text-sm font-semibold">{s.name}</span>
-                    <span className="font-mono text-xl tabular-nums">{pct}%</span>
-                  </div>
-                  <div className="mb-2 h-1.5 overflow-hidden rounded-full bg-paper-3">
-                    <div
-                      className="h-full rounded-full"
-                      style={{ width: `${pct}%`, background: barColor(pct) }}
-                    />
-                  </div>
-                  <div className="flex items-center justify-between text-xs text-ink-2">
-                    <span>
-                      {r?.papersAttempted ?? 0} paper{r?.papersAttempted === 1 ? "" : "s"} sat
-                    </span>
-                    <span className={`rounded-full px-2 py-0.5 font-mono text-[10px] ${pill.cls}`}>
-                      {pct > 0 && r ? `${r.gapCount} gap${r.gapCount === 1 ? "" : "s"}` : pill.label}
-                    </span>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
-
-        {nextPaper && weakest && (
-          <div className="mt-10 flex flex-wrap items-center justify-between gap-3 border-t border-border-soft pt-6">
-            <p className="text-sm text-ink-2">
-              Weakest right now: <b className="text-ink">{weakest.subject.name}</b>
+        <div
+          className="overflow-hidden rounded-2xl border border-border bg-card"
+          style={{ boxShadow: "var(--shadow)" }}
+        >
+          <FrameChrome />
+          <div className="p-6 sm:p-8">
+          <div className="mb-8 flex flex-wrap items-center justify-between gap-3">
+            <p className="font-[family-name:var(--font-display)] text-xl font-semibold">
+              {greeting()}
             </p>
-            <form action={startAttempt.bind(null, nextPaper.id)}>
-              <button
-                type="submit"
-                className="rounded-lg bg-ink px-4 py-2.5 text-sm font-semibold text-paper"
-              >
-                Start {weakest.subject.name} {nextPaper.paper_number} · {nextPaper.exam_diet}{" "}
-                {nextPaper.year} →
-              </button>
-            </form>
+            {nextExam && (
+              <span className="rounded-full bg-mark-red-soft px-3 py-1.5 font-mono text-xs text-mark-red">
+                {daysUntil(nextExam.examDate)} days to {nextExam.subjectName}{" "}
+                {nextExam.paperNumber} ({nextExam.examType === "final" ? "Final" : "Prelim"}) ·{" "}
+                {new Date(nextExam.examDate + "T00:00:00").toLocaleDateString("en-ZA", {
+                  weekday: "short",
+                  day: "numeric",
+                  month: "short",
+                })}
+                {nextExam.startTime && ` · ${nextExam.startTime.slice(0, 5)}`}
+              </span>
+            )}
           </div>
-        )}
 
-        {readiness &&
-          Object.values(readiness).some((r) => r.gapCount > 0) && (
-            <div className="mt-10">
-              <p className="mb-3 font-mono text-[11px] uppercase tracking-wider text-ink-2">
-                Flagged gaps
-              </p>
-              <div className="flex flex-col gap-2">
-                {Object.values(readiness)
-                  .flatMap((r) => r.topics.filter((t) => t.severity === "gap"))
-                  .slice(0, 5)
-                  .map((t) => (
-                    <Link
-                      key={t.topicId}
-                      href={`/study/${t.topicId}`}
-                      className="flex items-center justify-between rounded-lg border border-border bg-card px-4 py-3 text-sm hover:border-gold"
-                    >
-                      <span>{t.topicName}</span>
-                      <span className="font-mono text-xs text-mark-red">{t.pct}%</span>
-                    </Link>
-                  ))}
-              </div>
+          <div className="mb-2 flex items-baseline justify-between">
+            <span className="text-sm text-ink-2">Overall readiness</span>
+            <span className="font-[family-name:var(--font-display)] text-lg">{overallPct}%</span>
+          </div>
+          <div className="mb-8 h-2 overflow-hidden rounded-full bg-paper-3">
+            <div
+              className="h-full rounded-full"
+              style={{ width: `${overallPct}%`, background: "var(--gold)" }}
+            />
+          </div>
+
+          {subjects.length === 0 ? (
+            <p className="text-sm text-ink-2">
+              No subjects yet — seed the database with a subject and paper to get started.
+            </p>
+          ) : (
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              {subjects.map((s) => {
+                const r = readiness[s.id];
+                const pct = r?.overallPct ?? 0;
+                const pill = severityPill(pct);
+                return (
+                  <div key={s.id} className="rounded-lg border border-border bg-paper p-4">
+                    <div className="mb-2 flex items-start justify-between">
+                      <span className="text-sm font-semibold">{s.name}</span>
+                      <span className="font-mono text-xl tabular-nums">{pct}%</span>
+                    </div>
+                    <div className="mb-2 h-1.5 overflow-hidden rounded-full bg-paper-3">
+                      <div
+                        className="h-full rounded-full"
+                        style={{ width: `${pct}%`, background: barColor(pct) }}
+                      />
+                    </div>
+                    <div className="flex items-center justify-between text-xs text-ink-2">
+                      <span>
+                        {r?.papersAttempted ?? 0} paper{r?.papersAttempted === 1 ? "" : "s"} sat
+                      </span>
+                      <span className={`rounded-full px-2 py-0.5 font-mono text-[10px] ${pill.cls}`}>
+                        {pct > 0 && r
+                          ? `${r.gapCount} gap${r.gapCount === 1 ? "" : "s"}`
+                          : pill.label}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           )}
+
+          {nextPaper && weakest && (
+            <div className="mt-10 flex flex-wrap items-center justify-between gap-3 border-t border-border-soft pt-6">
+              <p className="text-sm text-ink-2">
+                Weakest right now: <b className="text-ink">{weakest.subject.name}</b>
+              </p>
+              <form action={startAttempt.bind(null, nextPaper.id)}>
+                <button
+                  type="submit"
+                  className="rounded-lg bg-ink px-4 py-2.5 text-sm font-semibold text-paper"
+                >
+                  Start {weakest.subject.name} {nextPaper.paper_number} · {nextPaper.exam_diet}{" "}
+                  {nextPaper.year} →
+                </button>
+              </form>
+            </div>
+          )}
+
+          {readiness &&
+            Object.values(readiness).some((r) => r.gapCount > 0) && (
+              <div className="mt-10">
+                <p className="mb-3 font-mono text-[11px] uppercase tracking-wider text-ink-2">
+                  Flagged gaps
+                </p>
+                <div className="flex flex-col gap-2">
+                  {Object.values(readiness)
+                    .flatMap((r) => r.topics.filter((t) => t.severity === "gap"))
+                    .slice(0, 5)
+                    .map((t) => (
+                      <Link
+                        key={t.topicId}
+                        href={`/study/${t.topicId}`}
+                        className="flex items-center justify-between rounded-lg border border-border bg-paper px-4 py-3 text-sm hover:border-gold"
+                      >
+                        <span>{t.topicName}</span>
+                        <span className="font-mono text-xs text-mark-red">{t.pct}%</span>
+                      </Link>
+                    ))}
+                </div>
+              </div>
+            )}
+
+          <Explainer label="Why">
+            Readiness is weighted toward your most recent attempt on each topic — an old mistake
+            doesn&apos;t count against you forever once you&apos;ve retried and improved on it.
+          </Explainer>
+          </div>
+        </div>
       </main>
     </div>
   );

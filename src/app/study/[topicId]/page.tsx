@@ -1,5 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 import { AppHeader } from "@/components/AppHeader";
+import { Explainer } from "@/components/Explainer";
+import { FrameChrome } from "@/components/FrameChrome";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentUser } from "@/lib/queries";
 import { scheduleRetest } from "@/app/actions";
@@ -79,40 +81,46 @@ export default async function StudyPage({
     <div className="flex flex-1 flex-col">
       <AppHeader />
       <main className="mx-auto w-full max-w-2xl flex-1 px-6 py-10">
-        <div className="mb-1 flex items-baseline justify-between">
-          <h1 className="font-[family-name:var(--font-display)] text-2xl font-semibold">
-            {topic.name}
-          </h1>
-          <span
-            className={`rounded-full px-2.5 py-1 font-mono text-xs ${
-              pct < 50
-                ? "bg-mark-red-soft text-mark-red"
-                : pct < 70
-                  ? "bg-amber-soft text-amber"
-                  : "bg-mastered-soft text-mastered"
-            }`}
-          >
-            {pct}%
-          </span>
-        </div>
-
-        {whyNotes.length > 0 && (
-          <div className="mb-8 border-b border-dashed border-border pb-6 text-sm leading-relaxed text-ink-2">
-            {whyNotes.map((n, i) => (
-              <p key={i} className={i > 0 ? "mt-2" : ""}>
-                {n}
-              </p>
-            ))}
+        <div
+          className="overflow-hidden rounded-2xl border border-border bg-card"
+          style={{ boxShadow: "var(--shadow)" }}
+        >
+          <FrameChrome />
+          <div className="p-6 sm:p-8">
+          <div className="mb-1 flex items-baseline justify-between">
+            <h1 className="font-[family-name:var(--font-display)] text-2xl font-semibold">
+              {topic.name}
+            </h1>
+            <span
+              className={`rounded-full px-2.5 py-1 font-mono text-xs ${
+                pct < 50
+                  ? "bg-mark-red-soft text-mark-red"
+                  : pct < 70
+                    ? "bg-amber-soft text-amber"
+                    : "bg-mastered-soft text-mastered"
+              }`}
+            >
+              {pct}%
+            </span>
           </div>
-        )}
 
-        <div className="flex flex-col gap-3">
+          {whyNotes.length > 0 && (
+            <div className="mb-8 border-b border-dashed border-border pb-6 text-sm leading-relaxed text-ink-2">
+              {whyNotes.map((n, i) => (
+                <p key={i} className={i > 0 ? "mt-2" : ""}>
+                  {n}
+                </p>
+              ))}
+            </div>
+          )}
+
+          <div className="flex flex-col gap-3">
           {topic.textbook_ref && topic.textbook_url && (
             <a
               href={topic.textbook_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-start gap-3 rounded-lg border border-border bg-card p-3.5 hover:border-gold"
+              className="flex items-start gap-3 rounded-lg border border-border bg-paper p-3.5 hover:border-gold"
             >
               <span className="flex-shrink-0 rounded bg-gold-soft px-2 py-1 font-mono text-[10px] uppercase tracking-wide text-gold-deep">
                 Textbook
@@ -121,7 +129,7 @@ export default async function StudyPage({
             </a>
           )}
           {topic.textbook_ref && !topic.textbook_url && (
-            <div className="flex items-start gap-3 rounded-lg border border-border bg-card p-3.5">
+            <div className="flex items-start gap-3 rounded-lg border border-border bg-paper p-3.5">
               <span className="flex-shrink-0 rounded bg-gold-soft px-2 py-1 font-mono text-[10px] uppercase tracking-wide text-gold-deep">
                 Textbook
               </span>
@@ -133,7 +141,7 @@ export default async function StudyPage({
               href={topic.video_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-start gap-3 rounded-lg border border-border bg-card p-3.5 hover:border-gold"
+              className="flex items-start gap-3 rounded-lg border border-border bg-paper p-3.5 hover:border-gold"
             >
               <span className="flex-shrink-0 rounded bg-gold-soft px-2 py-1 font-mono text-[10px] uppercase tracking-wide text-gold-deep">
                 Video
@@ -144,7 +152,7 @@ export default async function StudyPage({
             </a>
           )}
           {practiceQuestions.length > 0 && (
-            <div className="flex items-start gap-3 rounded-lg border border-border bg-card p-3.5">
+            <div className="flex items-start gap-3 rounded-lg border border-border bg-paper p-3.5">
               <span className="flex-shrink-0 rounded bg-gold-soft px-2 py-1 font-mono text-[10px] uppercase tracking-wide text-gold-deep">
                 Practice
               </span>
@@ -163,14 +171,22 @@ export default async function StudyPage({
           )}
         </div>
 
-        <form action={scheduleRetest.bind(null, topicId)} className="mt-8">
-          <button
-            type="submit"
-            className="rounded-lg bg-ink px-4 py-2.5 text-sm font-semibold text-paper"
-          >
-            Schedule a short retest in 5 days
-          </button>
-        </form>
+          <form action={scheduleRetest.bind(null, topicId)} className="mt-8">
+            <button
+              type="submit"
+              className="rounded-lg bg-ink px-4 py-2.5 text-sm font-semibold text-paper"
+            >
+              Schedule a short retest in 5 days
+            </button>
+          </form>
+
+          <Explainer label="About retests">
+            Scheduling a retest just sets a reminder date here on the dashboard — it doesn&apos;t
+            mark anything automatically. Come back and sit a few fresh questions on this topic
+            when you&apos;re ready.
+          </Explainer>
+          </div>
+        </div>
       </main>
     </div>
   );
