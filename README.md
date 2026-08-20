@@ -92,6 +92,19 @@ wider use), and sit the seeded paper.
 - **Marking isn't cheat-proof.** `memo_answers` is readable by any authenticated user under the current RLS policy (single-user app) — fine for personal use, but don't rely on it to stop a determined student from reading the memo via the network tab.
 - **Spaced repetition is a scheduled date, not a reminder.** `study_actions.scheduled_retest_at` is stored but nothing currently emails or notifies when it's due — the dashboard would need a "due today" surface, or an external reminder.
 
+## Still to do
+
+- **Exam-date countdown on the dashboard.** Blocked on confirming the exact
+  2026 NSC Geography timetable dates: Paper 2 is confirmed as **Thursday,
+  12 November 2026** (afternoon) from the official DBE Oct/Nov 2026
+  timetable PDF, but Paper 1's exact date couldn't be reliably extracted
+  from that PDF (complex table layout, no OCR tooling on this machine to
+  read it visually instead) — one third-party blog's claim of 29 October
+  2026 was checked against the official PDF and appears to be wrong.
+  Confirm both dates against the son's actual school-issued timetable, then
+  add an `exam_date` per paper/subject and a "days to your next exam"
+  surface on the dashboard.
+
 ## Deploying
 
 Push to a GitHub repo, import it into [Vercel](https://vercel.com/new), and
