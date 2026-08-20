@@ -55,6 +55,7 @@ export interface Database {
           name: string;
           caps_term: string | null;
           textbook_ref: string | null;
+          textbook_url: string | null;
           video_url: string | null;
         };
         Insert: {
@@ -64,6 +65,7 @@ export interface Database {
           name: string;
           caps_term?: string | null;
           textbook_ref?: string | null;
+          textbook_url?: string | null;
           video_url?: string | null;
         };
         Update: Partial<Database["public"]["Tables"]["topics"]["Insert"]>;

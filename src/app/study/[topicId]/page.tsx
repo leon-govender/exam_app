@@ -98,7 +98,20 @@ export default async function StudyPage({
         )}
 
         <div className="flex flex-col gap-3">
-          {topic.textbook_ref && (
+          {topic.textbook_ref && topic.textbook_url && (
+            <a
+              href={topic.textbook_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-start gap-3 rounded-lg border border-border p-3.5 hover:border-gold"
+            >
+              <span className="flex-shrink-0 rounded bg-gold-soft px-2 py-1 font-mono text-[10px] uppercase tracking-wide text-gold-deep">
+                Textbook
+              </span>
+              <span className="text-sm underline">{topic.textbook_ref}</span>
+            </a>
+          )}
+          {topic.textbook_ref && !topic.textbook_url && (
             <div className="flex items-start gap-3 rounded-lg border border-border p-3.5">
               <span className="flex-shrink-0 rounded bg-gold-soft px-2 py-1 font-mono text-[10px] uppercase tracking-wide text-gold-deep">
                 Textbook

@@ -72,6 +72,15 @@ async function main() {
       .maybeSingle();
     if (existing) {
       topicIds[t.key] = existing.id;
+      await supabase
+        .from("topics")
+        .update({
+          caps_term: t.caps_term,
+          textbook_ref: t.textbook_ref,
+          textbook_url: t.textbook_url,
+          video_url: t.video_url,
+        })
+        .eq("id", existing.id);
     } else {
       const { data, error } = await supabase
         .from("topics")
@@ -80,6 +89,7 @@ async function main() {
           name: t.name,
           caps_term: t.caps_term,
           textbook_ref: t.textbook_ref,
+          textbook_url: t.textbook_url,
           video_url: t.video_url,
         })
         .select("id")

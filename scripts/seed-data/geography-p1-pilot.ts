@@ -22,6 +22,19 @@
 
 import type { MarkingPoint } from "../../src/lib/grader";
 
+// There's no single official Geography textbook in South Africa — schools
+// pick from a DBE-approved catalogue of different publishers (Oxford
+// Successful, Solutions for All / Macmillan, Study & Master, Focus, etc.),
+// so a citation to any one of them only helps a student whose school
+// issued that specific book. The DBE's own free "Mind the Gap" study
+// guides are the one resource every matric Geography student can use
+// regardless of which textbook their school has — CAPS-aligned, official,
+// no login or purchase required. Swap this for your son's actual textbook
+// (with real chapter/page numbers, once you've checked them against his
+// copy) if you'd rather point there instead.
+const MIND_THE_GAP_URL =
+  "https://www.education.gov.za/Curriculum/LearningandTeachingSupportMaterials(LTSM)/MindtheGapStudyGuides.aspx";
+
 export const subject = {
   name: "Geography",
   stream: null as string | null,
@@ -39,28 +52,32 @@ export const topics = [
     key: "tropical-cyclones",
     name: "Tropical Cyclones",
     caps_term: "Term 1",
-    textbook_ref: "Oxford Successful Geography Gr 12, Ch 1, pg 8–19",
+    textbook_ref: "DBE Mind the Gap: Geography — Climatology (Tropical Cyclones)",
+    textbook_url: MIND_THE_GAP_URL,
     video_url: "https://www.youtube.com/results?search_query=tropical+cyclones+CAPS+geography+grade+12",
   },
   {
     key: "mid-latitude-cyclones",
     name: "Mid-latitude Cyclones (Cut-off Lows & Berg Winds)",
     caps_term: "Term 1",
-    textbook_ref: "Oxford Successful Geography Gr 12, Ch 2, pg 22–35",
+    textbook_ref: "DBE Mind the Gap: Geography — Climatology (Mid-latitude Cyclones)",
+    textbook_url: MIND_THE_GAP_URL,
     video_url: "https://www.youtube.com/results?search_query=cut+off+low+berg+wind+geography+grade+12",
   },
   {
     key: "fluvial-processes",
     name: "Fluvial Processes",
     caps_term: "Term 2",
-    textbook_ref: "Oxford Successful Geography Gr 12, Ch 5, pg 60–74",
+    textbook_ref: "DBE Mind the Gap: Geography — Geomorphology (Fluvial Processes)",
+    textbook_url: MIND_THE_GAP_URL,
     video_url: "https://www.youtube.com/results?search_query=fluvial+processes+river+long+profile+grade+12+geography",
   },
   {
     key: "drainage-basin-management",
     name: "Drainage Basin Management",
     caps_term: "Term 2",
-    textbook_ref: "Oxford Successful Geography Gr 12, Ch 5, pg 75–80",
+    textbook_ref: "DBE Mind the Gap: Geography — Geomorphology (Drainage Basin Management)",
+    textbook_url: MIND_THE_GAP_URL,
     video_url: "https://www.youtube.com/results?search_query=drainage+basin+flood+management+grade+12+geography",
   },
 ];
