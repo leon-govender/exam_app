@@ -8,7 +8,7 @@ export function AppHeader() {
         href="/"
         className="font-[family-name:var(--font-display)] text-lg font-semibold"
       >
-        Markbook
+        MatricPrep
       </Link>
       <form action={logout}>
         <button

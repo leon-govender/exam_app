@@ -1,4 +1,4 @@
-# Markbook
+# MatricPrep
 
 Past-paper exam simulation, AI-marked gap analysis, and study-plan referral for
 South African NSC matric prep. Pilot subject: **Geography**.

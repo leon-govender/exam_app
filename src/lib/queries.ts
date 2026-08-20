@@ -2,6 +2,11 @@ import "server-only";
 import { createClient } from "@/lib/supabase/server";
 
 export async function getCurrentUser() {
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+    // Not configured yet — treat as signed out so pages redirect to /login
+    // instead of crashing (see .env.example).
+    return null;
+  }
   const supabase = await createClient();
   const {
     data: { user },

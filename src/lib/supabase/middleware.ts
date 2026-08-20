@@ -6,6 +6,14 @@ const PUBLIC_PATHS = ["/login", "/auth/callback"];
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
 
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+    // Not configured yet (see .env.example) — let requests through instead
+    // of 500ing on every route. Pages that need a signed-in user will
+    // redirect to /login themselves; /login will explain what's missing
+    // once you try to sign in.
+    return supabaseResponse;
+  }
+
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,

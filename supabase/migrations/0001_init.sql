@@ -1,4 +1,4 @@
--- Markbook schema
+-- MatricPrep schema
 -- Content tables (subjects/papers/topics/questions/memos) are shared reference
 -- data seeded by the ingestion pipeline. Attempt tables are per-user and RLS-scoped.
 

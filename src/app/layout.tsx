@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Markbook",
+  title: "MatricPrep",
   description: "Past-paper exam simulation and gap analysis for NSC matric prep.",
 };
 

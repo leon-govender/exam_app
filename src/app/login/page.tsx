@@ -13,19 +13,24 @@ export default function LoginPage() {
     setStatus("sending");
     setError(null);
 
-    const supabase = createClient();
-    const { error } = await supabase.auth.signInWithOtp({
-      email,
-      options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback`,
-      },
-    });
+    try {
+      const supabase = createClient();
+      const { error } = await supabase.auth.signInWithOtp({
+        email,
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
+        },
+      });
 
-    if (error) {
+      if (error) {
+        setStatus("error");
+        setError(error.message);
+      } else {
+        setStatus("sent");
+      }
+    } catch {
       setStatus("error");
-      setError(error.message);
-    } else {
-      setStatus("sent");
+      setError("Supabase isn't configured yet — see .env.example / README.md.");
     }
   }
 
@@ -33,13 +38,13 @@ export default function LoginPage() {
     <div className="flex flex-1 items-center justify-center px-6">
       <div className="w-full max-w-sm">
         <p className="mb-2 font-mono text-xs uppercase tracking-wider text-gold-deep">
-          Markbook
+          MatricPrep
         </p>
         <h1 className="mb-2 font-[family-name:var(--font-display)] text-3xl font-semibold">
           Sign in
         </h1>
         <p className="mb-8 text-sm leading-relaxed text-ink-2">
-          Enter the email this Markbook account uses. We&apos;ll send a sign-in link — no
+          Enter the email this MatricPrep account uses. We&apos;ll send a sign-in link — no
           password to remember.
         </p>
 
