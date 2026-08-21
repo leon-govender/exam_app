@@ -22,20 +22,15 @@
 
 import type { MarkingPoint } from "../../src/lib/grader";
 
-// There's no single official Geography textbook in South Africa — schools
-// pick from a DBE-approved catalogue of different publishers (Oxford
-// Successful, Solutions for All / Macmillan, Study & Master, Focus, etc.),
-// so a citation to any one of them only helps a student whose school
-// issued that specific book. The DBE's own free "Mind the Gap" study
-// guide is the one resource every matric Geography student can use
-// regardless of which textbook their school has — CAPS-aligned, official,
-// no login or purchase required. This is the direct PDF download (verified
-// live, ~23MB, dated 18 Sept 2014 — the current edition as of writing).
-// Swap this for your son's actual textbook (with real chapter/page
-// numbers, once you've checked them against his copy) if you'd rather
-// point there instead.
-const MIND_THE_GAP_URL =
-  "https://www.education.gov.za/Portals/0/Documents/Manuals/3b%20MTG%20Geog%20EN%2018%20Sept%202014.pdf";
+// Textbook: Focus Geography Grade 12 (Maskew Miller Longman) — confirmed
+// as his actual school textbook, from the DBE-approved catalogue. No
+// chapter/page numbers here — we don't have a copy to verify them against,
+// and guessing them burned us once already (an earlier Oxford Successful
+// citation had fabricated page numbers). No textbook_url either: unlike
+// the DBE's free "Mind the Gap" guide, this is a commercial book with no
+// legitimate free PDF to link to — add real chapter/page refs (and a link,
+// if one turns out to exist) once someone checks them against the actual
+// copy.
 
 export const subject = {
   name: "Geography",
@@ -54,32 +49,32 @@ export const topics = [
     key: "tropical-cyclones",
     name: "Tropical Cyclones",
     caps_term: "Term 1",
-    textbook_ref: "DBE Mind the Gap: Geography — Climatology (Tropical Cyclones)",
-    textbook_url: MIND_THE_GAP_URL,
+    textbook_ref: "Focus Geography Grade 12 — Climatology (Tropical Cyclones)",
+    textbook_url: null as string | null,
     video_url: "https://www.youtube.com/results?search_query=tropical+cyclones+CAPS+geography+grade+12",
   },
   {
     key: "mid-latitude-cyclones",
     name: "Mid-latitude Cyclones (Cut-off Lows & Berg Winds)",
     caps_term: "Term 1",
-    textbook_ref: "DBE Mind the Gap: Geography — Climatology (Mid-latitude Cyclones)",
-    textbook_url: MIND_THE_GAP_URL,
+    textbook_ref: "Focus Geography Grade 12 — Climatology (Mid-latitude Cyclones)",
+    textbook_url: null as string | null,
     video_url: "https://www.youtube.com/results?search_query=cut+off+low+berg+wind+geography+grade+12",
   },
   {
     key: "fluvial-processes",
     name: "Fluvial Processes",
     caps_term: "Term 2",
-    textbook_ref: "DBE Mind the Gap: Geography — Geomorphology (Fluvial Processes)",
-    textbook_url: MIND_THE_GAP_URL,
+    textbook_ref: "Focus Geography Grade 12 — Geomorphology (Fluvial Processes)",
+    textbook_url: null as string | null,
     video_url: "https://www.youtube.com/results?search_query=fluvial+processes+river+long+profile+grade+12+geography",
   },
   {
     key: "drainage-basin-management",
     name: "Drainage Basin Management",
     caps_term: "Term 2",
-    textbook_ref: "DBE Mind the Gap: Geography — Geomorphology (Drainage Basin Management)",
-    textbook_url: MIND_THE_GAP_URL,
+    textbook_ref: "Focus Geography Grade 12 — Geomorphology (Drainage Basin Management)",
+    textbook_url: null as string | null,
     video_url: "https://www.youtube.com/results?search_query=drainage+basin+flood+management+grade+12+geography",
   },
 ];

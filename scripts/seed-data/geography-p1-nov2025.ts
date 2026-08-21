@@ -20,8 +20,9 @@
 
 import type { MarkingPoint } from "../../src/lib/grader";
 
-const MIND_THE_GAP_URL =
-  "https://www.education.gov.za/Portals/0/Documents/Manuals/3b%20MTG%20Geog%20EN%2018%20Sept%202014.pdf";
+// Textbook: Focus Geography Grade 12 (Maskew Miller Longman) — his actual
+// school textbook. No chapter/page numbers or link: see the matching note
+// in geography-p1-pilot.ts for why.
 const IMG = "/question-images/geography-2025-p1";
 
 export const subject = {
@@ -41,32 +42,32 @@ export const topics = [
     key: "subtropical-anticyclones",
     name: "Subtropical Anticyclones & Pressure Systems",
     caps_term: "Term 1",
-    textbook_ref: "DBE Mind the Gap: Geography — Climatology (Subtropical Anticyclones)",
-    textbook_url: MIND_THE_GAP_URL,
+    textbook_ref: "Focus Geography Grade 12 — Climatology (Subtropical Anticyclones)",
+    textbook_url: null as string | null,
     video_url: "https://www.youtube.com/results?search_query=subtropical+anticyclones+south+africa+geography+grade+12",
   },
   {
     key: "valley-climates",
     name: "Valley Climates",
     caps_term: "Term 1",
-    textbook_ref: "DBE Mind the Gap: Geography — Climatology (Valley Climates)",
-    textbook_url: MIND_THE_GAP_URL,
+    textbook_ref: "Focus Geography Grade 12 — Climatology (Valley Climates)",
+    textbook_url: null as string | null,
     video_url: "https://www.youtube.com/results?search_query=valley+climates+anabatic+katabatic+winds+geography+grade+12",
   },
   {
     key: "mid-latitude-cyclones",
     name: "Mid-latitude Cyclones (Cut-off Lows & Berg Winds)",
     caps_term: "Term 1",
-    textbook_ref: "DBE Mind the Gap: Geography — Climatology (Mid-latitude Cyclones)",
-    textbook_url: MIND_THE_GAP_URL,
+    textbook_ref: "Focus Geography Grade 12 — Climatology (Mid-latitude Cyclones)",
+    textbook_url: null as string | null,
     video_url: "https://www.youtube.com/results?search_query=cut+off+low+berg+wind+geography+grade+12",
   },
   {
     key: "tropical-cyclones",
     name: "Tropical Cyclones",
     caps_term: "Term 1",
-    textbook_ref: "DBE Mind the Gap: Geography — Climatology (Tropical Cyclones)",
-    textbook_url: MIND_THE_GAP_URL,
+    textbook_ref: "Focus Geography Grade 12 — Climatology (Tropical Cyclones)",
+    textbook_url: null as string | null,
     video_url: "https://www.youtube.com/results?search_query=tropical+cyclones+CAPS+geography+grade+12",
   },
   // Same topics as the pilot paper (matched by name on seed) — river
@@ -76,16 +77,16 @@ export const topics = [
     key: "fluvial-processes",
     name: "Fluvial Processes",
     caps_term: "Term 2",
-    textbook_ref: "DBE Mind the Gap: Geography — Geomorphology (Fluvial Processes)",
-    textbook_url: MIND_THE_GAP_URL,
+    textbook_ref: "Focus Geography Grade 12 — Geomorphology (Fluvial Processes)",
+    textbook_url: null as string | null,
     video_url: "https://www.youtube.com/results?search_query=fluvial+processes+river+long+profile+grade+12+geography",
   },
   {
     key: "drainage-basin-management",
     name: "Drainage Basin Management",
     caps_term: "Term 2",
-    textbook_ref: "DBE Mind the Gap: Geography — Geomorphology (Drainage Basin Management)",
-    textbook_url: MIND_THE_GAP_URL,
+    textbook_ref: "Focus Geography Grade 12 — Geomorphology (Drainage Basin Management)",
+    textbook_url: null as string | null,
     video_url: "https://www.youtube.com/results?search_query=drainage+basin+flood+management+grade+12+geography",
   },
 ];

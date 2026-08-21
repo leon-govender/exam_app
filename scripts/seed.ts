@@ -5,8 +5,9 @@ config({ path: resolve(__dirname, "../.env.local") });
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
 import * as geographyP1Pilot from "./seed-data/geography-p1-pilot";
 import * as geographyP1Nov2025 from "./seed-data/geography-p1-nov2025";
+import * as geographyP1Prelim2023 from "./seed-data/geography-p1-prelim2023";
 
-const datasets = [geographyP1Pilot, geographyP1Nov2025];
+const datasets = [geographyP1Pilot, geographyP1Nov2025, geographyP1Prelim2023];
 
 async function seedDataset(supabase: SupabaseClient, ds: typeof geographyP1Pilot) {
   const { subject, cognitiveLevels, topics, paper, questions, examSchedule } = ds;

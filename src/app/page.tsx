@@ -102,7 +102,7 @@ export default async function DashboardPage() {
               No subjects yet — seed the database with a subject and paper to get started.
             </p>
           ) : (
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <div className={`grid grid-cols-1 gap-3 ${subjects.length > 1 ? "sm:grid-cols-2" : ""}`}>
               {subjects.map((s) => {
                 const r = readiness[s.id];
                 const pct = r?.overallPct ?? 0;
