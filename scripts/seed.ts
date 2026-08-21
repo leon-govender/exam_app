@@ -2,26 +2,14 @@ import { config } from "dotenv";
 import { resolve } from "path";
 config({ path: resolve(__dirname, "../.env.local") });
 
-import { createClient } from "@supabase/supabase-js";
-import {
-  subject,
-  cognitiveLevels,
-  topics,
-  paper,
-  questions,
-  examSchedule,
-} from "./seed-data/geography-p1-pilot";
+import { createClient, SupabaseClient } from "@supabase/supabase-js";
+import * as geographyP1Pilot from "./seed-data/geography-p1-pilot";
+import * as geographyP1Nov2025 from "./seed-data/geography-p1-nov2025";
 
-async function main() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!url || !key) {
-    console.error(
-      "Missing NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY in .env.local",
-    );
-    process.exit(1);
-  }
-  const supabase = createClient(url, key, { auth: { persistSession: false } });
+const datasets = [geographyP1Pilot, geographyP1Nov2025];
+
+async function seedDataset(supabase: SupabaseClient, ds: typeof geographyP1Pilot) {
+  const { subject, cognitiveLevels, topics, paper, questions, examSchedule } = ds;
 
   console.log(`Seeding subject: ${subject.name}`);
   let { data: subjectRow } = await supabase
@@ -100,7 +88,7 @@ async function main() {
     }
   }
 
-  console.log("Seeding paper");
+  console.log(`Seeding paper: ${paper.paper_number} ${paper.exam_diet} ${paper.year}`);
   let { data: paperRow } = await supabase
     .from("papers")
     .select("id")
@@ -141,6 +129,7 @@ async function main() {
           topic_id: topicIds[q.topicKey],
           cognitive_level_id: cogLevelIds[q.cognitiveLevelName],
           order_index: i,
+          image_url: q.image_url ?? null,
         })
         .eq("id", questionId);
     } else {
@@ -155,6 +144,7 @@ async function main() {
           topic_id: topicIds[q.topicKey],
           cognitive_level_id: cogLevelIds[q.cognitiveLevelName],
           order_index: i,
+          image_url: q.image_url ?? null,
         })
         .select("id")
         .single();
@@ -162,17 +152,15 @@ async function main() {
       questionId = data.id;
     }
 
-    await supabase
-      .from("memo_answers")
-      .upsert(
-        {
-          question_id: questionId,
-          model_answer: q.model_answer,
-          marking_notes: q.marking_notes,
-          marking_points: q.marking_points,
-        },
-        { onConflict: "question_id" },
-      );
+    await supabase.from("memo_answers").upsert(
+      {
+        question_id: questionId,
+        model_answer: q.model_answer,
+        marking_notes: q.marking_notes,
+        marking_points: q.marking_points,
+      },
+      { onConflict: "question_id" },
+    );
   }
 
   console.log("Seeding exam schedule");
@@ -201,8 +189,24 @@ async function main() {
       if (error) throw error;
     }
   }
+}
 
-  console.log("Done. Geography P1 pilot paper seeded.");
+async function main() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !key) {
+    console.error(
+      "Missing NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY in .env.local",
+    );
+    process.exit(1);
+  }
+  const supabase = createClient(url, key, { auth: { persistSession: false } });
+
+  for (const ds of datasets) {
+    await seedDataset(supabase, ds);
+  }
+
+  console.log("Done.");
 }
 
 main().catch((err) => {

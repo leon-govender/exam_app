@@ -12,6 +12,7 @@ interface Question {
   marks: number;
   order_index: number;
   topicName: string | null;
+  image_url: string | null;
 }
 
 function formatTime(totalSeconds: number) {
@@ -152,6 +153,14 @@ export function ExamClient({
                         </span>
                       )}
                       <div className="flex-1">
+                        {q.image_url && (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={q.image_url}
+                            alt=""
+                            className="mb-2 max-w-full rounded-lg border border-border"
+                          />
+                        )}
                         <p className="mb-2 flex items-start justify-between gap-3 text-sm leading-relaxed">
                           <span>{q.text}</span>
                           <span className="flex-shrink-0 font-mono text-xs text-ink-2">

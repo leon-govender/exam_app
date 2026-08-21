@@ -39,7 +39,7 @@ export default async function ExamPage({
 
   const { data: questions } = await supabase
     .from("questions")
-    .select("id, number, sub_number, text, marks, order_index, topic_id")
+    .select("id, number, sub_number, text, marks, order_index, topic_id, image_url")
     .eq("paper_id", attempt.paper_id)
     .order("order_index");
 

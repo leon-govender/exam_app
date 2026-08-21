@@ -82,6 +82,7 @@ export interface Database {
           topic_id: string | null;
           cognitive_level_id: string | null;
           order_index: number;
+          image_url: string | null;
         };
         Insert: {
           id?: string;
@@ -93,6 +94,7 @@ export interface Database {
           topic_id?: string | null;
           cognitive_level_id?: string | null;
           order_index?: number;
+          image_url?: string | null;
         };
         Update: Partial<Database["public"]["Tables"]["questions"]["Insert"]>;
         Relationships: [];

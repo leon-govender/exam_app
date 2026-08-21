@@ -47,7 +47,22 @@ function wordPresent(word: string, answerWords: Set<string>): boolean {
   return false;
 }
 
-function phraseMatches(keyword: string, answerWords: Set<string>): boolean {
+/**
+ * Short exact-token keywords (MCQ letters like "D", matching codes like "Y"/
+ * "Z") bypass stopword filtering and word-count matching entirely — a
+ * keyword this short would otherwise either get filtered as a stopword
+ * ("a") or matched on zero significant words. It must be the FIRST word of
+ * the answer, not just present anywhere — "A" is also the English article,
+ * so "it is a katabatic wind" must not credit option A just because "a"
+ * appears mid-sentence. Real MCQ answers lead with the letter ("D",
+ * "D - katabatic", "D) destroys vegetation").
+ */
+function phraseMatches(keyword: string, answerWords: Set<string>, rawAnswer: string): boolean {
+  const normalizedKeyword = normalize(keyword);
+  if (normalizedKeyword.length > 0 && normalizedKeyword.length <= 2 && !normalizedKeyword.includes(" ")) {
+    const firstWord = rawAnswer.split(" ")[0] ?? "";
+    return firstWord === normalizedKeyword;
+  }
   const words = significantWords(keyword);
   if (words.length === 0) return false;
   return words.every((w) => wordPresent(w, answerWords));
@@ -75,13 +90,14 @@ export function gradeAnswer(params: {
     };
   }
 
-  const answerWords = new Set(normalize(studentAnswer).split(" ").filter(Boolean));
+  const rawAnswer = normalize(studentAnswer);
+  const answerWords = new Set(rawAnswer.split(" ").filter(Boolean));
 
   const hit: string[] = [];
   const missed: string[] = [];
   let total = 0;
   for (const point of markingPoints) {
-    if (point.keywords.some((k) => phraseMatches(k, answerWords))) {
+    if (point.keywords.some((k) => phraseMatches(k, answerWords, rawAnswer))) {
       total += point.marks;
       hit.push(point.description);
     } else {
