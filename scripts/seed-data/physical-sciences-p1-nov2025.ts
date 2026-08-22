@@ -23,27 +23,19 @@
 // differs from Geography's Recall/Comprehension/Analysis/Evaluation), and
 // its topics.
 //
-// IMPORTANT grader caveat: the keyword-matching grader in src/lib/grader.ts
-// was designed for Geography's descriptive-prose answers. For Physics,
-// correct answers are numeric (e.g. "33,56°", "0,38", "17,97 m·s⁻¹").
-// grader.ts's significantWords() filter drops any keyword token of length
-// <= 2, and normalize() splits on commas — so a numeric answer like "0,38"
-// becomes tokens "0" and "38", both of which are silently dropped by the
-// length filter before matching even starts. In practice this means
-// marking_points keyed on final numeric answers will almost never award
-// marks automatically. To keep grading useful at all, marking_points below
-// are keyed on the physics concepts/formula names a candidate's working
-// would contain (e.g. "coefficient of static friction", "impulse
-// momentum theorem") rather than on the numbers themselves, and MCQ answers
-// use the single-letter trick (matches only if the letter is the FIRST word
-// of the answer, per phraseMatches()). Full model answers with the actual
-// numeric working are always given in model_answer/marking_notes for
-// students to self-check against, but grader auto-marking of calculation
-// steps should be treated as unreliable until grader.ts is adapted for
-// numeric marking (e.g. tolerance-based numeric comparison) — flagged here
-// for follow-up, not solved in this ingestion.
+// Calculation questions (2.3.1, 2.3.2, 3.2, 3.3, 4.2.1, 4.2.2, 5.2, 5.4, 6.4,
+// 7.3, 7.4, 8.2, 8.3.1, 8.4, 9.3, 10.2.1) use `steps` instead of
+// `marking_points`: the student works the problem out on paper as normal,
+// then picks the option they got for each mark-earning step (formula,
+// intermediate value, final answer) from a few choices, rather than typing
+// anything. This sidesteps grader.ts's free-text/numeric-tolerance matching
+// entirely for these — grading is exact-index equality (see
+// gradeSteppedAnswer in src/lib/grader.ts) while still awarding partial
+// credit per step the way the real DBE memo does. Distractors are chosen to
+// trap specific real errors (wrong formula, sign flip, wrong given value),
+// not just wrong final numbers.
 
-import type { MarkingPoint } from "../../src/lib/grader";
+import type { MarkingPoint, MarkingPointStep } from "../../src/lib/grader";
 
 const IMG = "/question-images/physics-2025-p1";
 
@@ -152,7 +144,8 @@ interface QuestionSeed {
   cognitiveLevelName: string;
   model_answer: string;
   marking_notes: string;
-  marking_points: MarkingPoint[];
+  marking_points?: MarkingPoint[];
+  steps?: MarkingPointStep[];
   image_url?: string;
 }
 
@@ -277,9 +270,19 @@ export const questions: QuestionSeed[] = [
     marks: 2, topicKey: "newtons-laws", cognitiveLevelName: "Application",
     model_answer: "Fx = F cos θ, so 15 = 18 cos θ, giving θ = 33,56°.",
     marking_notes: "Formula Fx = Fcosθ (or equivalent using the vertical component and tanθ/sinθ), correct substitution, and final answer θ = 33,56°.",
-    marking_points: [
-      { marks: 1, description: "correct formula relating the horizontal component to F and θ (Fx = Fcosθ)", keywords: ["fcos", "cos theta", "horizontal component"] },
-      { marks: 1, description: "correct final answer for θ", keywords: ["33 56", "theta"] },
+    steps: [
+      {
+        marks: 1,
+        description: "Which formula relates the horizontal component of F to θ?",
+        options: ["Fx = F cos θ", "Fx = F sin θ", "Fx = F tan θ", "Fx = F / cos θ"],
+        correctIndex: 0,
+      },
+      {
+        marks: 1,
+        description: "What is θ?",
+        options: ["33,56°", "56,44°", "39,79°", "46,89°"],
+        correctIndex: 0,
+      },
     ],
   },
   {
@@ -288,12 +291,25 @@ export const questions: QuestionSeed[] = [
     marks: 5, topicKey: "newtons-laws", cognitiveLevelName: "Application",
     model_answer: "Vertical component of F: Fy = √(18² − 15²) = 9,95 N. Normal force: N = mg − Fy = (5)(9,8) − 9,95 = 39,05 N. Since the block experiences maximum static friction, fs(max) = μsN, so 15 = μs(39,05), giving μs = 0,38.",
     marking_notes: "Marking points: formula fs(max) = μsN; correct substitution of fs(max) = 15 N; correct calculation of the vertical component Fy; correct subtraction to find N from Fg and Fy; correct final answer μs = 0,38.",
-    marking_points: [
-      { marks: 1, description: "formula fs(max) = μsN used", keywords: ["fs max", "mu", "normal force"] },
-      { marks: 1, description: "correct substitution of the maximum static friction value (15 N)", keywords: ["15", "fs max"] },
-      { marks: 1, description: "correct calculation of the vertical component of F", keywords: ["vertical component", "9 95"] },
-      { marks: 1, description: "correct subtraction to find the normal force N from weight and the vertical component", keywords: ["normal force", "weight", "39 05"] },
-      { marks: 1, description: "correct final coefficient of static friction (0,38)", keywords: ["coefficient of static friction", "0 38"] },
+    steps: [
+      {
+        marks: 1,
+        description: "What is the vertical component of F (Fy)?",
+        options: ["9,95 N", "15,00 N", "12,73 N", "5,05 N"],
+        correctIndex: 0,
+      },
+      {
+        marks: 2,
+        description: "What is the normal force N?",
+        options: ["39,05 N", "49,00 N", "29,10 N", "34,00 N"],
+        correctIndex: 0,
+      },
+      {
+        marks: 2,
+        description: "What is the coefficient of static friction μs?",
+        options: ["0,38", "0,46", "0,31", "1,20"],
+        correctIndex: 0,
+      },
     ],
   },
   {
@@ -327,10 +343,19 @@ export const questions: QuestionSeed[] = [
     marks: 3, topicKey: "vertical-projectile-motion", cognitiveLevelName: "Application",
     model_answer: "Using vf = vi + aΔt (taking upward as positive): 0 = 15 + (−9,8)Δt, so Δt = p = 1,53 s.",
     marking_notes: "Formula vf = vi + aΔt with Δt, correct substitution, and the correct final answer p = 1,53 s.",
-    marking_points: [
-      { marks: 1, description: "equation of motion with Δt used (vf = vi + aΔt)", keywords: ["vf", "delta t", "equation of motion"] },
-      { marks: 1, description: "correct substitution of initial velocity and acceleration due to gravity", keywords: ["15", "9 8"] },
-      { marks: 1, description: "correct final answer for p (1,53 s)", keywords: ["1 53"] },
+    steps: [
+      {
+        marks: 1,
+        description: "Which equation of motion connects vi, vf, a and Δt here?",
+        options: ["vf = vi + aΔt", "vf² = vi² + 2aΔx", "Δx = viΔt + ½aΔt²", "vf = vi − aΔt"],
+        correctIndex: 0,
+      },
+      {
+        marks: 2,
+        description: "What is p?",
+        options: ["1,53 s", "1,50 s", "3,06 s", "0,65 s"],
+        correctIndex: 0,
+      },
     ],
   },
   {
@@ -339,10 +364,19 @@ export const questions: QuestionSeed[] = [
     marks: 3, topicKey: "vertical-projectile-motion", cognitiveLevelName: "Application",
     model_answer: "Using vf = vi + aΔt from the launch point to the ground (upward positive): vf = 15 + (−9,8)(3,36) = −17,93, so the magnitude q = 17,93 m·s⁻¹ (accept the range 17,93–18,33 m·s⁻¹ depending on the reference points used).",
     marking_notes: "Formula with vf, correct substitution, correct final answer (range 17,93–18,33 m·s⁻¹ accepted for different valid approaches).",
-    marking_points: [
-      { marks: 1, description: "formula with final velocity used (vf = vi + aΔt or equivalent)", keywords: ["vf", "equation of motion"] },
-      { marks: 1, description: "correct substitution into the formula", keywords: ["3 36", "9 8"] },
-      { marks: 1, description: "correct final answer for q", keywords: ["17 93", "17 97"] },
+    steps: [
+      {
+        marks: 1,
+        description: "Which equation of motion applies from launch to landing (Δt = 3,36 s)?",
+        options: ["vf = vi + aΔt", "vf² = vi² + 2aΔx", "Δx = viΔt + ½aΔt²", "vf = vi − aΔt"],
+        correctIndex: 0,
+      },
+      {
+        marks: 2,
+        description: "What is q (magnitude)?",
+        options: ["17,93 m·s⁻¹", "15,00 m·s⁻¹", "18,60 m·s⁻¹", "47,93 m·s⁻¹"],
+        correctIndex: 0,
+      },
     ],
   },
   {
@@ -388,10 +422,24 @@ export const questions: QuestionSeed[] = [
     marks: 3, topicKey: "momentum-impulse", cognitiveLevelName: "Application",
     model_answer: "The gradient of the pf vs Δt graph equals the net force: Fnet = (4,5 − 0)/(0,03 − 0,01) = 225 N, directed to the right (opposite to the ball's original direction).",
     marking_notes: "Marking points: gradient formula (Δpf/Δ(Δt)) used, correct substitution of the two graph points, correct final answer 225 N with direction (to the right / opposite the ball's original direction).",
-    marking_points: [
-      { marks: 1, description: "gradient of the pf vs Δt graph used to find Fnet", keywords: ["gradient", "fnet"] },
-      { marks: 1, description: "correct substitution of the graph values (4,5 and 0,03−0,01)", keywords: ["4 5", "0 03", "0 01"] },
-      { marks: 1, description: "correct final force with direction (225 N to the right, opposite the ball's original direction)", keywords: ["225", "opposite", "to the right"] },
+    steps: [
+      {
+        marks: 1,
+        description: "How do you find Fnet from the pf vs Δt graph?",
+        options: [
+          "Fnet is the gradient of the graph",
+          "Fnet is the area under the graph",
+          "Fnet is the y-intercept of the graph",
+          "Fnet = pf ÷ Δt at a single point on the graph",
+        ],
+        correctIndex: 0,
+      },
+      {
+        marks: 2,
+        description: "What is Fnet?",
+        options: ["225 N", "450 N", "150 N", "0,089 N"],
+        correctIndex: 0,
+      },
     ],
     image_url: `${IMG}/4-momentum-graph.png`,
   },
@@ -401,11 +449,24 @@ export const questions: QuestionSeed[] = [
     marks: 4, topicKey: "momentum-impulse", cognitiveLevelName: "Application",
     model_answer: "Using the impulse-momentum theorem, FnetΔt = Δp = mvf − mvi. Substituting one data point, e.g. (225)(0,03) = 4,5 − (0,15)vi, gives vi = −15 m·s⁻¹, so the magnitude of the initial velocity is 15 m·s⁻¹.",
     marking_notes: "Formula FnetΔt = Δp = mvf − mvi (any equivalent form), correct substitution using the mass (0,15 kg) and a graph data point, correct final answer 15 m·s⁻¹.",
-    marking_points: [
-      { marks: 1, description: "impulse-momentum theorem used (FnetΔt = Δp = mvf − mvi)", keywords: ["impulse momentum theorem", "delta p", "net delta t"] },
-      { marks: 1, description: "correct substitution of mass (0,15 kg) and a graph data point", keywords: ["0 15", "mass"] },
-      { marks: 1, description: "algebra correctly rearranged to solve for vi", keywords: ["vi"] },
-      { marks: 1, description: "correct final answer for the magnitude of the initial velocity (15 m·s⁻¹)", keywords: ["15 m", "initial velocity"] },
+    steps: [
+      {
+        marks: 1,
+        description: "Which principle connects Fnet, the contact time and the ball's velocities?",
+        options: [
+          "Impulse-momentum theorem: FnetΔt = mvf − mvi",
+          "Work-energy theorem: Wnet = ΔEk",
+          "Conservation of momentum: m1v1 = m2v2",
+          "Newton's second law only: Fnet = ma",
+        ],
+        correctIndex: 0,
+      },
+      {
+        marks: 3,
+        description: "What is the magnitude of the initial velocity?",
+        options: ["15 m·s⁻¹", "30 m·s⁻¹", "7,5 m·s⁻¹", "45 m·s⁻¹"],
+        correctIndex: 0,
+      },
     ],
   },
   {
@@ -434,10 +495,24 @@ export const questions: QuestionSeed[] = [
     marks: 3, topicKey: "work-energy-power", cognitiveLevelName: "Application",
     model_answer: "WFA = ΔEk (the surface A to B is frictionless), so FΔxcosθ = Ekf − Eki. Substituting: (12)(7)cos0° = Ekf − 0, giving Ekf = 84 J.",
     marking_notes: "Formula relating net/applied work to the change in kinetic energy, correct substitution of F, distance and angle, correct final answer 84 J.",
-    marking_points: [
-      { marks: 1, description: "work-energy theorem formula used (Wnet = ΔEk or WFA = ΔEk)", keywords: ["wnet", "delta ek", "work energy"] },
-      { marks: 1, description: "correct substitution of force, distance A to B and angle", keywords: ["12", "cos"] },
-      { marks: 1, description: "correct final kinetic energy at B (84 J)", keywords: ["84"] },
+    steps: [
+      {
+        marks: 1,
+        description: "Which principle applies from A to B (frictionless surface)?",
+        options: [
+          "Work-energy theorem: WFA = ΔEk",
+          "Conservation of momentum",
+          "Non-conservative work-energy theorem: Wnc = ΔEk + ΔEp",
+          "Power formula: P = Fv",
+        ],
+        correctIndex: 0,
+      },
+      {
+        marks: 2,
+        description: "What is the kinetic energy at B?",
+        options: ["84 J", "81,6 J", "78,9 J", "168 J"],
+        correctIndex: 0,
+      },
     ],
   },
   {
@@ -459,12 +534,35 @@ export const questions: QuestionSeed[] = [
     marks: 5, topicKey: "work-energy-power", cognitiveLevelName: "Evaluation",
     model_answer: "Wnc = ΔEk + ΔEp. Substituting from B to C: fkΔxcosθ = (Ekf − 84) − (3)(9,8)(6,8)sin20°, i.e. (21)(6,8)cos180° = (Ekf − 84) − 68,38, giving Ekf = 9,58 J. Since 9,58 J > 0 J (a positive, physically possible kinetic energy at C), the crate WILL pass point C. (Equivalently, solving for the distance the crate can travel before stopping gives Δx = 7,68 m, which is greater than the 6,8 m to point C, so the crate passes C.)",
     marking_notes: "Marking points: non-conservative work-energy formula used (Wnc = ΔEk + ΔEp), correct substitution of friction work, correct substitution of the change in potential energy (using height or mgh·sinθ), correct final answer, and a conclusion that compares the result to the given distance/zero and states the crate passes point C.",
-    marking_points: [
-      { marks: 1, description: "non-conservative work-energy formula used (Wnc = ΔEk + ΔEp)", keywords: ["wnc", "delta ek", "delta ep"] },
-      { marks: 1, description: "correct substitution for the work done by friction on the incline", keywords: ["21", "cos180"] },
-      { marks: 1, description: "correct substitution for the change in gravitational potential energy on the incline", keywords: ["sin20", "6 8"] },
-      { marks: 1, description: "correct final numeric result (9,58 J or 7,68 m or 2,52 m·s⁻¹, consistent with the method used)", keywords: ["9 58", "7 68"] },
-      { marks: 1, description: "correct conclusion that the crate will pass point C, with comparison shown", keywords: ["will pass point c", "pass point c"] },
+    steps: [
+      {
+        marks: 1,
+        description: "Which principle applies from B to C (friction present, height changes)?",
+        options: [
+          "Non-conservative work-energy theorem: Wnc = ΔEk + ΔEp",
+          "Work-energy theorem (frictionless form): Wnet = ΔEk",
+          "Conservation of mechanical energy: ΔEk + ΔEp = 0",
+          "Newton's second law: Fnet = ma",
+        ],
+        correctIndex: 0,
+      },
+      {
+        marks: 2,
+        description: "What is the kinetic energy at C?",
+        options: ["9,58 J", "152,38 J", "15,62 J", "−58,80 J"],
+        correctIndex: 0,
+      },
+      {
+        marks: 2,
+        description: "Does the crate pass point C?",
+        options: [
+          "YES — Ek at C is positive (9,58 J > 0)",
+          "NO — Ek at C is negative, so the crate stops before C",
+          "Cannot be determined without the crate's speed at C",
+          "YES — because Wnc is positive",
+        ],
+        correctIndex: 0,
+      },
     ],
   },
 
@@ -510,13 +608,36 @@ export const questions: QuestionSeed[] = [
     marks: 6, topicKey: "doppler-effect", cognitiveLevelName: "Evaluation",
     model_answer: "Approaching: fL = v/(v − vs) × fs, so 1298 = v/(v−25) × fs, giving fs·v = 1298(v − 25) ... (1). Moving away: fL = v/(v + vs) × fs, so 1115 = v/(v+25) × fs, giving fs·v = 1115(v + 25) ... (2). Equating (1) and (2): 1298(v − 25) = 1115(v + 25), which solves to v = 329,64 m·s⁻¹.",
     marking_notes: "Marking points: Doppler formula for the source approaching (either form), correct substitution for approaching case; Doppler formula for source moving away (either form), correct substitution for moving-away case; the two equations correctly equated (or divided) and solved for v = 329,64 m·s⁻¹.",
-    marking_points: [
-      { marks: 1, description: "Doppler formula used for the ambulance approaching (fL = v/(v−vs) fs)", keywords: ["doppler", "approaching", "fl"] },
-      { marks: 1, description: "correct substitution of 1298 Hz and v−25 for the approaching case", keywords: ["1298", "v 25"] },
-      { marks: 1, description: "Doppler formula used for the ambulance moving away (fL = v/(v+vs) fs)", keywords: ["moving away", "v 25"] },
-      { marks: 1, description: "correct substitution of 1115 Hz and v+25 for the moving-away case", keywords: ["1115"] },
-      { marks: 1, description: "the two equations correctly equated (or divided) to eliminate fs", keywords: ["equating", "equated"] },
-      { marks: 1, description: "correct final speed of sound (329,64 m·s⁻¹)", keywords: ["329 64", "speed of sound"] },
+    steps: [
+      {
+        marks: 1,
+        description: "Which Doppler formula applies while the ambulance APPROACHES?",
+        options: ["fL = v/(v−vs) × fs", "fL = v/(v+vs) × fs", "fL = (v+vs)/v × fs", "fL = v/(v−vs)² × fs"],
+        correctIndex: 0,
+      },
+      {
+        marks: 1,
+        description: "Which Doppler formula applies while the ambulance MOVES AWAY?",
+        options: ["fL = v/(v+vs) × fs", "fL = v/(v−vs) × fs", "fL = (v−vs)/v × fs", "fL = v/(v+vs)² × fs"],
+        correctIndex: 0,
+      },
+      {
+        marks: 1,
+        description: "How do you eliminate fs (the unknown source frequency) between the two equations?",
+        options: [
+          "Equate (or divide) the two rearranged expressions for fs from each case",
+          "Add the two detected frequencies together",
+          "Multiply the two detected frequencies together",
+          "Subtract vs from both detected frequencies",
+        ],
+        correctIndex: 0,
+      },
+      {
+        marks: 3,
+        description: "What is v, the speed of sound?",
+        options: ["329,64 m·s⁻¹", "343,00 m·s⁻¹", "300,00 m·s⁻¹", "25,00 m·s⁻¹"],
+        correctIndex: 0,
+      },
     ],
   },
 
@@ -548,10 +669,19 @@ export const questions: QuestionSeed[] = [
     marks: 3, topicKey: "electrostatics", cognitiveLevelName: "Application",
     model_answer: "E = kQ/r², so 1,08×10⁶ = (9×10⁹)(3×10⁻⁷)/r², giving r = 0,05 m.",
     marking_notes: "Formula E = kQ/r², correct substitution, and the answer r = 0,05 m shown.",
-    marking_points: [
-      { marks: 1, description: "formula E = kQ/r² used", keywords: ["kq", "electric field formula"] },
-      { marks: 1, description: "correct substitution of E, k and Q", keywords: ["1 08", "9x10", "3x10"] },
-      { marks: 1, description: "shows r = 0,05 m as the final result", keywords: ["0 05"] },
+    steps: [
+      {
+        marks: 1,
+        description: "Which formula relates electric field strength to charge and distance?",
+        options: ["E = kQ/r²", "F = kQ₁Q₂/r²", "E = kQ/r", "V = kQ/r"],
+        correctIndex: 0,
+      },
+      {
+        marks: 2,
+        description: "What is r?",
+        options: ["0,05 m", "0,0025 m", "0,50 m", "0,158 m"],
+        correctIndex: 0,
+      },
     ],
   },
   {
@@ -560,13 +690,36 @@ export const questions: QuestionSeed[] = [
     marks: 6, topicKey: "electrostatics", cognitiveLevelName: "Evaluation",
     model_answer: "FXY = kQXQY/r² = (9×10⁹)(3×10⁻⁷)(5×10⁻⁷)/(0,05)² = 0,54 N (attractive, towards Y). FXZ = kQXQZ/r² = (9×10⁹)(3×10⁻⁷)(4×10⁻⁷)/(0,04)² = 0,68 N (attractive, towards Z). Net electrostatic force = 0,68 − 0,54 = 0,14 N. Since the given net force on X (0,0427 N) is less than this calculated net electrostatic force (0,14 N), a frictional force must also be acting on X — so the surface is NOT frictionless (NO).",
     marking_notes: "Marking points: Coulomb's law applied correctly to find FXY, applied correctly to find FXZ, correct subtraction of the two forces to find the net electrostatic force, correct comparison to the given net force of 0,0427 N, and the correct conclusion (NO, not frictionless — friction of 0,0923 N must be present).",
-    marking_points: [
-      { marks: 1, description: "Coulomb's law used to calculate the force between X and Y", keywords: ["kqxqy", "coulomb"] },
-      { marks: 1, description: "correct substitution for the force between X and Y", keywords: ["3x10", "5x10", "0 05"] },
-      { marks: 1, description: "Coulomb's law used to calculate the force between X and Z", keywords: ["kqxqz"] },
-      { marks: 1, description: "correct substitution for the force between X and Z", keywords: ["3x10", "4x10", "0 04"] },
-      { marks: 1, description: "correct subtraction of the two forces to find the net electrostatic force (0,14 N)", keywords: ["0 14"] },
-      { marks: 1, description: "correct conclusion: NO, the surface is not frictionless, since the calculated net electrostatic force does not equal the given net force", keywords: ["no", "not frictionless", "friction"] },
+    steps: [
+      {
+        marks: 1,
+        description: "What is the force between X and Y (FXY)?",
+        options: ["0,54 N", "0,675 N", "1,35 N", "0,27 N"],
+        correctIndex: 0,
+      },
+      {
+        marks: 1,
+        description: "What is the force between X and Z (FXZ)?",
+        options: ["0,68 N", "0,54 N", "1,35 N", "0,17 N"],
+        correctIndex: 0,
+      },
+      {
+        marks: 2,
+        description: "What is the net electrostatic force on X?",
+        options: ["0,14 N", "1,22 N", "0,68 N", "0,54 N"],
+        correctIndex: 0,
+      },
+      {
+        marks: 2,
+        description: "Is the surface frictionless?",
+        options: [
+          "NO — friction must also act, since the calculated net electrostatic force (0,14 N) is greater than the given net force (0,0427 N)",
+          "YES — the given net force matches the calculated electrostatic force",
+          "NO — because the object is not moving",
+          "Cannot be determined from the given information",
+        ],
+        correctIndex: 0,
+      },
     ],
   },
   {
@@ -596,10 +749,19 @@ export const questions: QuestionSeed[] = [
     marks: 3, topicKey: "electric-circuits", cognitiveLevelName: "Application",
     model_answer: "R = V/I, so 0,1 = V/120, giving V = 12 V.",
     marking_notes: "Formula R = V/I, correct substitution of the starter motor's resistance and the ammeter reading, correct final answer 12 V.",
-    marking_points: [
-      { marks: 1, description: "formula R = V/I used", keywords: ["v i", "ohms law"] },
-      { marks: 1, description: "correct substitution of resistance (0,1 Ω) and current (120 A)", keywords: ["0 1", "120"] },
-      { marks: 1, description: "correct final voltmeter reading (12 V)", keywords: ["12 v", "voltmeter"] },
+    steps: [
+      {
+        marks: 1,
+        description: "Which formula relates the motor's resistance, the voltmeter reading and the ammeter reading?",
+        options: ["R = V/I (Ohm's law)", "P = VI", "V = IR + ε", "R = I/V"],
+        correctIndex: 0,
+      },
+      {
+        marks: 2,
+        description: "What is the voltmeter reading?",
+        options: ["12 V", "0,00083 V", "120 V", "1,2 V"],
+        correctIndex: 0,
+      },
     ],
   },
   {
@@ -608,10 +770,19 @@ export const questions: QuestionSeed[] = [
     marks: 3, topicKey: "electric-circuits", cognitiveLevelName: "Application",
     model_answer: "P = I²R, so 15 = I²(12), giving I = 1,12 A.",
     marking_notes: "Formula relating power, current and resistance (P = I²R, or via V = √(PR) then I = V/R), correct substitution, correct final answer 1,12 A.",
-    marking_points: [
-      { marks: 1, description: "power formula used (P = I²R or P = V²/R)", keywords: ["i2r", "v2", "power formula"] },
-      { marks: 1, description: "correct substitution of power (15 W) and resistance (12 Ω)", keywords: ["15", "12"] },
-      { marks: 1, description: "correct final current through L1 (1,12 A)", keywords: ["1 12"] },
+    steps: [
+      {
+        marks: 1,
+        description: "Which formula relates power, current and resistance here?",
+        options: ["P = I²R", "P = VI", "P = V²/R directly solved for I without knowing V", "P = IR"],
+        correctIndex: 0,
+      },
+      {
+        marks: 2,
+        description: "What is the current through L1?",
+        options: ["1,12 A", "1,25 A", "0,79 A", "180 A"],
+        correctIndex: 0,
+      },
     ],
   },
   {
@@ -628,13 +799,41 @@ export const questions: QuestionSeed[] = [
     marks: 6, topicKey: "electric-circuits", cognitiveLevelName: "Evaluation",
     model_answer: "Parallel resistance of L1 and L2: Rp = (12)(12)/(12+12) = 6 Ω. With S1 closed, S2 open: ε1 = I(R+r) = 2,24(6+r). With S1 open, S2 closed: ε2 = I(R+r) = 120(0,1+r). Since ε1 = ε2: 2,24(6+r) = 120(0,1+r), giving r = 0,012 Ω. Substituting back: ε = 2,24(6 + 0,012) = 13,46 V (accept the range 13,42–13,47 V depending on the method/rounding used).",
     marking_notes: "Marking points: parallel resistance of the two headlights calculated; emf equation for the S1-closed case; emf equation for the S2-closed case; the two emf expressions equated (since it's the same battery); internal resistance r solved; final emf value in the range 13,42–13,47 V.",
-    marking_points: [
-      { marks: 1, description: "parallel resistance of L1 and L2 calculated (Rp = 6 Ω)", keywords: ["parallel resistance", "6"] },
-      { marks: 1, description: "emf equation set up for the S1-closed, S2-open case (ε = I(R+r))", keywords: ["2 24", "r"] },
-      { marks: 1, description: "emf equation set up for the S1-open, S2-closed case", keywords: ["120", "0 1"] },
-      { marks: 1, description: "the two emf expressions equated to solve for r", keywords: ["equating", "equated"] },
-      { marks: 1, description: "correct internal resistance r solved (0,012 Ω)", keywords: ["0 012"] },
-      { marks: 1, description: "correct final emf value (in the range 13,42–13,47 V)", keywords: ["13 4", "emf"] },
+    steps: [
+      {
+        marks: 1,
+        description: "What is the parallel resistance of L1 and L2?",
+        options: ["6 Ω", "24 Ω", "12 Ω", "3 Ω"],
+        correctIndex: 0,
+      },
+      {
+        marks: 1,
+        description: "How do you set up the two equations (S1-closed and S2-closed cases)?",
+        options: [
+          "ε = I(R+r) for each case, using that case's circuit resistance and current",
+          "ε = IR only, ignoring internal resistance in both cases",
+          "ε = V + Ir, using the 8.2 voltmeter reading for both cases",
+          "P = εI for each case",
+        ],
+        correctIndex: 0,
+      },
+      {
+        marks: 1,
+        description: "How do you solve for the internal resistance r?",
+        options: [
+          "Equate the two ε expressions (same battery, same emf) and solve for r",
+          "Add the two ε expressions and solve for r",
+          "Use only the S2-closed case, since r appears linearly",
+          "Divide the two currents to find r directly",
+        ],
+        correctIndex: 0,
+      },
+      {
+        marks: 3,
+        description: "What is the final emf?",
+        options: ["13,46 V", "12,00 V", "120,48 V", "6,72 V"],
+        correctIndex: 0,
+      },
     ],
   },
   {
@@ -677,12 +876,31 @@ export const questions: QuestionSeed[] = [
     marks: 5, topicKey: "electrodynamics", cognitiveLevelName: "Evaluation",
     model_answer: "Vrms = Vmax/√2 = 311,11/√2 = 219,99 V. Pave = Vrms²/R = 219,99²/60 = 806,59 W = 0,80659 kW. Energy used: E = PΔt = 0,80659 × 1,5 = 1,21 kWh. Cost = E × tariff = 1,21 × 3,33 = R4,03.",
     marking_notes: "Marking points: Vrms formula and correct substitution; average power formula (Pave = Vrms²/R) and correct substitution; energy E = PΔt calculated correctly (in kWh, using the 1,5 hour operating time); correct final cost R4,03.",
-    marking_points: [
-      { marks: 1, description: "rms voltage formula used and correctly calculated (Vrms = Vmax/√2)", keywords: ["vrms", "vmax"] },
-      { marks: 1, description: "average power formula used (Pave = Vrms²/R)", keywords: ["pave", "vrms2"] },
-      { marks: 1, description: "correct substitution to find average power in kW", keywords: ["60", "806"] },
-      { marks: 1, description: "energy calculated using E = PΔt over 1,5 hours", keywords: ["1 5", "energy"] },
-      { marks: 1, description: "correct final cost (R4,03), using the given tariff", keywords: ["4 03", "3 33"] },
+    steps: [
+      {
+        marks: 1,
+        description: "What is Vrms?",
+        options: ["219,99 V", "311,11 V", "155,56 V", "440,71 V"],
+        correctIndex: 0,
+      },
+      {
+        marks: 1,
+        description: "Which formula gives the average power dissipated?",
+        options: ["Pave = Vrms²/R", "Pave = Vmax²/R", "Pave = Vrms/R", "Pave = Vrms² × R"],
+        correctIndex: 0,
+      },
+      {
+        marks: 1,
+        description: "What is the average power, in kW?",
+        options: ["0,807 kW", "1,613 kW", "0,404 kW", "8,07 kW"],
+        correctIndex: 0,
+      },
+      {
+        marks: 2,
+        description: "What is the final cost of running the fan for 1,5 hours?",
+        options: ["R4,03", "R2,02", "R8,06", "R1,34"],
+        correctIndex: 0,
+      },
     ],
   },
   {
@@ -752,11 +970,25 @@ export const questions: QuestionSeed[] = [
     marks: 4, topicKey: "photoelectric-effect", cognitiveLevelName: "Application",
     model_answer: "E = hf, so (5,7×10⁻¹⁹ − 1,3×10⁻¹⁹) = (6,63×10⁻³⁴)f, giving f = 6,64×10¹⁴ Hz.",
     marking_notes: "Formula E = hf, correct calculation of the energy difference E3 − E1 (order doesn't matter as long as f is kept positive), correct substitution of Planck's constant, correct final answer 6,64×10¹⁴ Hz.",
-    marking_points: [
-      { marks: 1, description: "formula E = hf used", keywords: ["e hf", "planck"] },
-      { marks: 1, description: "correct energy difference calculated (E3 minus E1)", keywords: ["5 7", "1 3"] },
-      { marks: 1, description: "correct substitution of Planck's constant (6,63×10⁻³⁴)", keywords: ["6 63"] },
-      { marks: 1, description: "correct final frequency (6,64×10¹⁴ Hz)", keywords: ["6 64"] },
+    steps: [
+      {
+        marks: 1,
+        description: "Which formula relates a photon's energy to its frequency?",
+        options: ["E = hf", "E = ½mv²", "f = v/λ", "E = W₀ + Ek(max)"],
+        correctIndex: 0,
+      },
+      {
+        marks: 1,
+        description: "What energy difference should you use for the E3 → E1 transition?",
+        options: ["4,4×10⁻¹⁹ J", "3,8×10⁻¹⁹ J", "0,6×10⁻¹⁹ J", "7,0×10⁻¹⁹ J"],
+        correctIndex: 0,
+      },
+      {
+        marks: 2,
+        description: "What is the frequency of photon X?",
+        options: ["6,64×10¹⁴ Hz", "6,64×10¹³ Hz", "2,90×10¹⁴ Hz", "4,38×10¹⁴ Hz"],
+        correctIndex: 0,
+      },
     ],
     image_url: `${IMG}/10-energy-levels.png`,
   },

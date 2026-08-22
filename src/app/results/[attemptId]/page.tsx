@@ -137,9 +137,12 @@ export default async function ResultsPage({
           )}
 
           <Explainer label="How this was marked">
-            {process.env.ANTHROPIC_API_KEY
-              ? "Each answer was marked by Claude against the official memo, with partial credit and a note on what was missing — closer to how a real examiner marks than exact-match checking."
-              : "Each answer was marked by matching keywords from the memo, not by understanding the reasoning behind it — a correct idea phrased differently might not get credit. Treat this as a first pass, not the final word; check a few answers against the memo yourself before trusting the score."}
+            Free-text answers were marked by matching keywords and numbers from the
+            memo, not by understanding the reasoning behind them — a correct idea
+            phrased differently might not get credit. Calculation questions were marked
+            step by step against fixed choices instead. Treat this as a first pass, not
+            the final word; check a few answers against the memo yourself before
+            trusting the score.
           </Explainer>
           </div>
         </div>

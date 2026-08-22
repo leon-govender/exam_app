@@ -3,8 +3,8 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
-import { markAnswer } from "@/lib/anthropic";
-import { gradeAnswer, type MarkingPoint } from "@/lib/grader";
+import { createServiceClient } from "@/lib/supabase/service";
+import { gradeAnswer, gradeSteppedAnswer, type MarkingPoint, type MarkingPointStep } from "@/lib/grader";
 
 export async function logout() {
   const supabase = await createClient();
@@ -57,9 +57,13 @@ export async function startAttempt(paperId: string) {
   redirect(`/exam/${attemptId}`);
 }
 
+export type AttemptAnswer =
+  | { mode: "text"; text: string }
+  | { mode: "stepped_mcq"; steps: Record<number, number> };
+
 export async function submitAttempt(
   attemptId: string,
-  answers: Record<string, string>,
+  answers: Record<string, AttemptAnswer>,
 ) {
   const supabase = await createClient();
   const {
@@ -78,64 +82,74 @@ export async function submitAttempt(
 
   const { data: questions, error: qErr } = await supabase
     .from("questions")
-    .select("id, text, marks, memo_answers(model_answer, marking_notes, marking_points)")
+    .select("id, marks, answer_mode")
     .eq("paper_id", attempt.paper_id);
   if (qErr) throw qErr;
 
-  type QRow = {
-    id: string;
-    text: string;
-    marks: number;
-    memo_answers: {
-      model_answer: string;
-      marking_notes: string | null;
-      marking_points: MarkingPoint[] | null;
-    } | null;
-  };
+  // memo_answers holds each question's correct answer, so it's only ever
+  // read through the service-role client, never the student's own
+  // RLS-scoped session (see 0007_stepped_answers.sql).
+  const service = createServiceClient();
+  const { data: memos, error: mErr } = await service
+    .from("memo_answers")
+    .select("question_id, marking_points")
+    .in(
+      "question_id",
+      questions.map((q) => q.id),
+    );
+  if (mErr) throw mErr;
+  const memoByQuestion = new Map(memos.map((m) => [m.question_id, m.marking_points]));
 
-  // Marking against the memo: use Claude for nuanced marking when an API key
-  // is configured, otherwise fall back to the free rule-based keyword grader
-  // (src/lib/grader.ts) — no external call, no cost.
-  const useAI = Boolean(process.env.ANTHROPIC_API_KEY);
+  const results = questions.map((q) => {
+    const answer = answers[q.id];
+    const markingPoints = memoByQuestion.get(q.id) ?? null;
 
-  const results = await Promise.all(
-    (questions as unknown as QRow[]).map(async (q) => {
-      const studentAnswer = answers[q.id] ?? "";
-      if (!q.memo_answers) {
-        return {
-          attempt_id: attemptId,
-          question_id: q.id,
-          answer_text: studentAnswer,
-          marks_awarded: 0,
-          marks_possible: q.marks,
-          ai_feedback: "No memo available for this question yet.",
-        };
-      }
-
-      const mark = useAI
-        ? await markAnswer({
-            questionText: q.text,
-            marksPossible: q.marks,
-            modelAnswer: q.memo_answers.model_answer,
-            markingNotes: q.memo_answers.marking_notes,
-            studentAnswer,
-          })
-        : gradeAnswer({
-            marksPossible: q.marks,
-            markingPoints: q.memo_answers.marking_points,
-            studentAnswer,
-          });
-
+    if (!markingPoints) {
       return {
         attempt_id: attemptId,
         question_id: q.id,
-        answer_text: studentAnswer,
+        answer_text: answer?.mode === "text" ? answer.text : null,
+        step_answers: answer?.mode === "stepped_mcq" ? answer.steps : null,
+        marks_awarded: 0,
+        marks_possible: q.marks,
+        ai_feedback: "No memo available for this question yet.",
+      };
+    }
+
+    if (q.answer_mode === "stepped_mcq") {
+      const stepAnswers = answer?.mode === "stepped_mcq" ? answer.steps : {};
+      const mark = gradeSteppedAnswer({
+        marksPossible: q.marks,
+        steps: markingPoints as unknown as MarkingPointStep[],
+        stepAnswers,
+      });
+      return {
+        attempt_id: attemptId,
+        question_id: q.id,
+        answer_text: null,
+        step_answers: stepAnswers,
         marks_awarded: mark.marks_awarded,
         marks_possible: q.marks,
         ai_feedback: mark.feedback,
       };
-    }),
-  );
+    }
+
+    const studentAnswer = answer?.mode === "text" ? answer.text : "";
+    const mark = gradeAnswer({
+      marksPossible: q.marks,
+      markingPoints: markingPoints as unknown as MarkingPoint[],
+      studentAnswer,
+    });
+    return {
+      attempt_id: attemptId,
+      question_id: q.id,
+      answer_text: studentAnswer,
+      step_answers: null,
+      marks_awarded: mark.marks_awarded,
+      marks_possible: q.marks,
+      ai_feedback: mark.feedback,
+    };
+  });
 
   const { error: insertErr } = await supabase
     .from("attempt_answers")

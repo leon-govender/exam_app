@@ -83,6 +83,8 @@ export interface Database {
           cognitive_level_id: string | null;
           order_index: number;
           image_url: string | null;
+          answer_mode: string;
+          step_options: Json | null;
         };
         Insert: {
           id?: string;
@@ -95,6 +97,8 @@ export interface Database {
           cognitive_level_id?: string | null;
           order_index?: number;
           image_url?: string | null;
+          answer_mode?: string;
+          step_options?: Json | null;
         };
         Update: Partial<Database["public"]["Tables"]["questions"]["Insert"]>;
         Relationships: [];
@@ -144,6 +148,7 @@ export interface Database {
           marks_awarded: number | null;
           marks_possible: number;
           ai_feedback: string | null;
+          step_answers: Json | null;
         };
         Insert: {
           id?: string;
@@ -153,6 +158,7 @@ export interface Database {
           marks_awarded?: number | null;
           marks_possible: number;
           ai_feedback?: string | null;
+          step_answers?: Json | null;
         };
         Update: Partial<Database["public"]["Tables"]["attempt_answers"]["Insert"]>;
         Relationships: [];

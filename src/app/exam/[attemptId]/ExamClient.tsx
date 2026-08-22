@@ -1,8 +1,13 @@
 "use client";
 
 import { useEffect, useMemo, useState, useTransition } from "react";
-import { submitAttempt } from "@/app/actions";
+import { submitAttempt, type AttemptAnswer } from "@/app/actions";
 import { FrameChrome } from "@/components/FrameChrome";
+
+interface StepOption {
+  description: string;
+  options: string[];
+}
 
 interface Question {
   id: string;
@@ -13,6 +18,8 @@ interface Question {
   order_index: number;
   topicName: string | null;
   image_url: string | null;
+  answer_mode: string;
+  step_options: StepOption[] | null;
 }
 
 function formatTime(totalSeconds: number) {
@@ -33,6 +40,7 @@ export function ExamClient({
 }) {
   const [secondsLeft, setSecondsLeft] = useState(paper.durationMinutes * 60);
   const [answers, setAnswers] = useState<Record<string, string>>({});
+  const [stepAnswers, setStepAnswers] = useState<Record<string, Record<number, number>>>({});
   const [flagged, setFlagged] = useState<Set<string>>(new Set());
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPending, startTransition] = useTransition();
@@ -46,10 +54,18 @@ export function ExamClient({
   const answeredMainNumbers = useMemo(() => {
     const answered = new Set<string>();
     for (const q of questions) {
-      if (answers[q.id]?.trim()) answered.add(q.number);
+      if (q.answer_mode === "stepped_mcq") {
+        const steps = q.step_options ?? [];
+        const picked = stepAnswers[q.id] ?? {};
+        if (steps.length > 0 && steps.every((_, i) => picked[i] !== undefined)) {
+          answered.add(q.number);
+        }
+      } else if (answers[q.id]?.trim()) {
+        answered.add(q.number);
+      }
     }
     return answered;
-  }, [questions, answers]);
+  }, [questions, answers, stepAnswers]);
 
   const currentNumber = mainNumbers[currentIndex];
   const currentGroup = questions.filter((q) => q.number === currentNumber);
@@ -67,8 +83,15 @@ export function ExamClient({
   }
 
   function handleSubmit() {
+    const payload: Record<string, AttemptAnswer> = {};
+    for (const q of questions) {
+      payload[q.id] =
+        q.answer_mode === "stepped_mcq"
+          ? { mode: "stepped_mcq", steps: stepAnswers[q.id] ?? {} }
+          : { mode: "text", text: answers[q.id] ?? "" };
+    }
     startTransition(() => {
-      submitAttempt(attemptId, answers);
+      submitAttempt(attemptId, payload);
     });
   }
 
@@ -144,7 +167,11 @@ export function ExamClient({
                 </div>
 
                 {currentGroup.map((q) => {
-                  const hasAnswer = Boolean(answers[q.id]?.trim());
+                  const isStepped = q.answer_mode === "stepped_mcq";
+                  const hasAnswer = isStepped
+                    ? (q.step_options ?? []).length > 0 &&
+                      (q.step_options ?? []).every((_, i) => stepAnswers[q.id]?.[i] !== undefined)
+                    : Boolean(answers[q.id]?.trim());
                   return (
                     <div key={q.id} className="flex gap-3">
                       {q.sub_number && (
@@ -167,19 +194,62 @@ export function ExamClient({
                             ({q.marks})
                           </span>
                         </p>
-                        <textarea
-                          value={answers[q.id] ?? ""}
-                          onChange={(e) =>
-                            setAnswers((a) => ({ ...a, [q.id]: e.target.value }))
-                          }
-                          rows={q.marks > 4 ? 5 : 2}
-                          placeholder="Type your answer…"
-                          className={`w-full rounded-lg border px-3 py-2 text-sm outline-none focus:border-gold ${
-                            hasAnswer
-                              ? "border-transparent bg-mastered-soft"
-                              : "border-border bg-card"
-                          }`}
-                        />
+                        {isStepped ? (
+                          <div className="flex flex-col gap-3">
+                            {(q.step_options ?? []).map((step, stepIndex) => {
+                              const selected = stepAnswers[q.id]?.[stepIndex];
+                              return (
+                                <div
+                                  key={stepIndex}
+                                  className="rounded-lg border border-border bg-card p-3"
+                                >
+                                  <p className="mb-2 text-xs font-semibold text-ink-2">
+                                    {step.description}
+                                  </p>
+                                  <div className="flex flex-col gap-1.5">
+                                    {step.options.map((option, optionIndex) => (
+                                      <label
+                                        key={optionIndex}
+                                        className={`flex cursor-pointer items-center gap-2 rounded-md border px-3 py-1.5 text-sm ${
+                                          selected === optionIndex
+                                            ? "border-transparent bg-mastered-soft"
+                                            : "border-border-soft"
+                                        }`}
+                                      >
+                                        <input
+                                          type="radio"
+                                          name={`${q.id}-step-${stepIndex}`}
+                                          checked={selected === optionIndex}
+                                          onChange={() =>
+                                            setStepAnswers((sa) => ({
+                                              ...sa,
+                                              [q.id]: { ...sa[q.id], [stepIndex]: optionIndex },
+                                            }))
+                                          }
+                                        />
+                                        {option}
+                                      </label>
+                                    ))}
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        ) : (
+                          <textarea
+                            value={answers[q.id] ?? ""}
+                            onChange={(e) =>
+                              setAnswers((a) => ({ ...a, [q.id]: e.target.value }))
+                            }
+                            rows={q.marks > 4 ? 5 : 2}
+                            placeholder="Type your answer…"
+                            className={`w-full rounded-lg border px-3 py-2 text-sm outline-none focus:border-gold ${
+                              hasAnswer
+                                ? "border-transparent bg-mastered-soft"
+                                : "border-border bg-card"
+                            }`}
+                          />
+                        )}
                       </div>
                     </div>
                   );

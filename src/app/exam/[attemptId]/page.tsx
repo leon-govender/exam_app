@@ -39,7 +39,7 @@ export default async function ExamPage({
 
   const { data: questions } = await supabase
     .from("questions")
-    .select("id, number, sub_number, text, marks, order_index, topic_id, image_url")
+    .select("id, number, sub_number, text, marks, order_index, topic_id, image_url, answer_mode, step_options")
     .eq("paper_id", attempt.paper_id)
     .order("order_index");
 
@@ -52,6 +52,7 @@ export default async function ExamPage({
   const questionsWithTopic = (questions ?? []).map((q) => ({
     ...q,
     topicName: q.topic_id ? (topicNameById.get(q.topic_id) ?? null) : null,
+    step_options: q.step_options as { description: string; options: string[] }[] | null,
   }));
 
   return (

@@ -3,6 +3,7 @@ import { resolve } from "path";
 config({ path: resolve(__dirname, "../.env.local") });
 
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
+import type { MarkingPoint, MarkingPointStep } from "../src/lib/grader";
 import * as geographyP1Pilot from "./seed-data/geography-p1-pilot";
 import * as geographyP1Nov2025 from "./seed-data/geography-p1-nov2025";
 import * as geographyP1Prelim2023 from "./seed-data/geography-p1-prelim2023";
@@ -16,7 +17,55 @@ import * as physicalSciencesP1Nov2025 from "./seed-data/physical-sciences-p1-nov
 
 const datasets = [geographyP1Pilot, geographyP1Nov2025, geographyP1Prelim2023, geographyP2Prelim2023, geographyP1Prelim2024, geographyP2Prelim2024, geographyP2Nov2025, geographyP1Nov2024, geographyP2Nov2024, physicalSciencesP1Nov2025];
 
-async function seedDataset(supabase: SupabaseClient, ds: typeof geographyP1Pilot) {
+// Shape shared by every seed-data file. `marking_points` (free-text grading)
+// and `steps` (stepped-MCQ grading) are mutually exclusive per question, but
+// both optional here so this stays structurally compatible with every
+// existing per-file QuestionSeed interface, which only declares whichever
+// one it actually uses.
+interface SeedQuestion {
+  number: string;
+  sub_number: string | null;
+  text: string;
+  marks: number;
+  topicKey: string;
+  cognitiveLevelName: string;
+  model_answer: string;
+  marking_notes: string;
+  marking_points?: MarkingPoint[];
+  steps?: MarkingPointStep[];
+  image_url?: string;
+}
+
+interface SeedDataset {
+  subject: { name: string; stream: string | null };
+  cognitiveLevels: { name: string; order_index: number }[];
+  topics: {
+    key: string;
+    name: string;
+    caps_term: string | null;
+    textbook_ref: string | null;
+    textbook_url: string | null;
+    video_url: string | null;
+  }[];
+  paper: {
+    year: number;
+    exam_diet: string;
+    paper_number: string;
+    duration_minutes: number;
+    total_marks: number;
+    source_url: string | null;
+  };
+  questions: SeedQuestion[];
+  examSchedule: {
+    paperNumber: string;
+    examType: "prelim" | "final";
+    examDate: string;
+    startTime: string;
+    durationMinutes: number;
+  }[];
+}
+
+async function seedDataset(supabase: SupabaseClient, ds: SeedDataset) {
   const { subject, cognitiveLevels, topics, paper, questions, examSchedule } = ds;
 
   console.log(`Seeding subject: ${subject.name}`);
@@ -139,6 +188,17 @@ async function seedDataset(supabase: SupabaseClient, ds: typeof geographyP1Pilot
       .eq("sub_number", q.sub_number)
       .maybeSingle();
 
+    // Calculation questions can carry `steps` (one MCQ per marking point)
+    // instead of free-text `marking_points`. step_options (public: label +
+    // choices, no correct answer) goes on the question row; the full steps
+    // (with correctIndex/marks) go into memo_answers.marking_points, same
+    // column the free-text grader reads, just a different shape.
+    const isStepped = Boolean(q.steps);
+    const answerMode = isStepped ? "stepped_mcq" : "text";
+    const stepOptions = q.steps
+      ? q.steps.map(({ description, options }) => ({ description, options }))
+      : null;
+
     let questionId: string;
     if (existingQ) {
       questionId = existingQ.id;
@@ -151,6 +211,8 @@ async function seedDataset(supabase: SupabaseClient, ds: typeof geographyP1Pilot
           cognitive_level_id: cogLevelIds[q.cognitiveLevelName],
           order_index: i,
           image_url: q.image_url ?? null,
+          answer_mode: answerMode,
+          step_options: stepOptions,
         })
         .eq("id", questionId);
     } else {
@@ -166,6 +228,8 @@ async function seedDataset(supabase: SupabaseClient, ds: typeof geographyP1Pilot
           cognitive_level_id: cogLevelIds[q.cognitiveLevelName],
           order_index: i,
           image_url: q.image_url ?? null,
+          answer_mode: answerMode,
+          step_options: stepOptions,
         })
         .select("id")
         .single();
@@ -178,7 +242,7 @@ async function seedDataset(supabase: SupabaseClient, ds: typeof geographyP1Pilot
         question_id: questionId,
         model_answer: q.model_answer,
         marking_notes: q.marking_notes,
-        marking_points: q.marking_points,
+        marking_points: isStepped ? q.steps : q.marking_points,
       },
       { onConflict: "question_id" },
     );
