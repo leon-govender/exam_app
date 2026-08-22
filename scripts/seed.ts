@@ -10,8 +10,10 @@ import * as geographyP2Prelim2023 from "./seed-data/geography-p2-prelim2023";
 import * as geographyP1Prelim2024 from "./seed-data/geography-p1-prelim2024";
 import * as geographyP2Prelim2024 from "./seed-data/geography-p2-prelim2024";
 import * as geographyP2Nov2025 from "./seed-data/geography-p2-nov2025";
+import * as geographyP1Nov2024 from "./seed-data/geography-p1-nov2024";
+import * as geographyP2Nov2024 from "./seed-data/geography-p2-nov2024";
 
-const datasets = [geographyP1Pilot, geographyP1Nov2025, geographyP1Prelim2023, geographyP2Prelim2023, geographyP1Prelim2024, geographyP2Prelim2024, geographyP2Nov2025];
+const datasets = [geographyP1Pilot, geographyP1Nov2025, geographyP1Prelim2023, geographyP2Prelim2023, geographyP1Prelim2024, geographyP2Prelim2024, geographyP2Nov2025, geographyP1Nov2024, geographyP2Nov2024];
 
 async function seedDataset(supabase: SupabaseClient, ds: typeof geographyP1Pilot) {
   const { subject, cognitiveLevels, topics, paper, questions, examSchedule } = ds;
