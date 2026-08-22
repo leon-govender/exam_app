@@ -9,8 +9,9 @@ import * as geographyP1Prelim2023 from "./seed-data/geography-p1-prelim2023";
 import * as geographyP2Prelim2023 from "./seed-data/geography-p2-prelim2023";
 import * as geographyP1Prelim2024 from "./seed-data/geography-p1-prelim2024";
 import * as geographyP2Prelim2024 from "./seed-data/geography-p2-prelim2024";
+import * as geographyP2Nov2025 from "./seed-data/geography-p2-nov2025";
 
-const datasets = [geographyP1Pilot, geographyP1Nov2025, geographyP1Prelim2023, geographyP2Prelim2023, geographyP1Prelim2024, geographyP2Prelim2024];
+const datasets = [geographyP1Pilot, geographyP1Nov2025, geographyP1Prelim2023, geographyP2Prelim2023, geographyP1Prelim2024, geographyP2Prelim2024, geographyP2Nov2025];
 
 async function seedDataset(supabase: SupabaseClient, ds: typeof geographyP1Pilot) {
   const { subject, cognitiveLevels, topics, paper, questions, examSchedule } = ds;
@@ -109,6 +110,19 @@ async function seedDataset(supabase: SupabaseClient, ds: typeof geographyP1Pilot
       .single();
     if (error) throw error;
     paperRow = data;
+  } else {
+    // Existing row: refresh mutable fields (e.g. total_marks) so edits to
+    // this dataset's paper metadata take effect on reseed, not just on
+    // first insert.
+    const { error } = await supabase
+      .from("papers")
+      .update({
+        duration_minutes: paper.duration_minutes,
+        total_marks: paper.total_marks,
+        source_url: paper.source_url,
+      })
+      .eq("id", paperRow.id);
+    if (error) throw error;
   }
   const paperId = paperRow!.id;
 
