@@ -286,6 +286,7 @@ export const questions: QuestionSeed[] = [
     marks: 4, topicKey: "newtons-laws", cognitiveLevelName: "Application",
     model_answer: "At 4,2 kg the hanging mass is on the verge of pulling the crate, so T = mhanging·g = 4,2(9,8) = 41,16 N. At this point fs(max) = T, and fs(max) = μsN = μs(mcrate)g, so μs(8,5)(9,8) = 41,16, giving μs = 0,49.",
     marking_notes: "Marking points: correct value of T (=fs(max)) using the hanging mass at the verge of slipping (41,16 N); formula fs(max) = μsN; correct final answer μs = 0,49.",
+    image_url: `${IMG}/2-accel-hangingmass-graph.png`,
     steps: [
       {
         marks: 1,
