@@ -1,7 +1,7 @@
 # MatricPrep
 
-Past-paper exam simulation, AI-marked gap analysis, and study-plan referral for
-South African NSC matric prep. Pilot subject: **Geography**.
+Past-paper exam simulation, gap analysis, and study-plan referral for
+South African NSC matric prep. Subjects: **Geography** and **Physical Sciences**.
 
 ## How it works
 
@@ -20,28 +20,23 @@ South African NSC matric prep. Pilot subject: **Geography**.
 4. In **Authentication → Providers**, email/magic-link sign-in is enabled by default — no extra setup needed.
 5. In **Authentication → URL Configuration**, add `http://localhost:3000/auth/callback` as a redirect URL (and your deployed URL later).
 
-### 2. Marking: free by default, AI marking optional
+### 2. Marking: free and deterministic, no API key
 
-Out of the box, submitted answers are marked by a free, deterministic
-keyword grader (`src/lib/grader.ts`) — no API key, no cost. Each memo
-question carries a list of `marking_points` (short gradable concepts pulled
-from the marking notes); a point is awarded if the student's answer contains
-any of its keyword phrases. It's a coverage check, not a reasoning check —
-it can't tell a correct explanation from a jumbled one that happens to use
-the right words, and it can miss a correct idea phrased in a way none of the
-keywords anticipated. Good enough for a first pass; not as good as a real
-marker.
+Every answer is marked without any AI call or per-request cost:
 
-If you want noticeably better marking (it reads the answer, not just
-matches keywords, and writes a specific note on what was missing), add an
-Anthropic API key at [console.anthropic.com](https://console.anthropic.com)
-→ API Keys. **`submitAttempt` checks for `ANTHROPIC_API_KEY` automatically**
-— set it and AI marking (`src/lib/anthropic.ts`) takes over with no other
-change needed; leave it unset and the free grader keeps running. Cost for
-this app's usage pattern (one short marking call per submitted answer, not
-continuous chat) is typically cents per paper — a new API account often
-starts with a small free trial credit too, worth checking before adding
-your own funds.
+- **Free-text questions** use a keyword grader (`gradeAnswer` in
+  `src/lib/grader.ts`). Each memo question carries `marking_points` (short
+  gradable concepts pulled from the marking notes, including a
+  tolerance-based numeric match for calculated values); a point is awarded
+  if the student's answer contains any of its keyword phrases or a number
+  within tolerance of the expected value. It's a coverage check, not a
+  reasoning check — it can't tell a correct explanation from a jumbled one
+  that happens to use the right words.
+- **Calculation questions** (mostly Physical Sciences) use stepped
+  multiple-choice instead of free text (`gradeSteppedAnswer`): the student
+  works the problem out on paper, then picks the option matching their
+  result for each mark-earning step (formula, substitution, final answer),
+  so partial credit is exact — no keyword ambiguity, no OCR needed.
 
 ### 3. Environment variables
 
@@ -49,7 +44,7 @@ your own funds.
 cp .env.example .env.local
 ```
 
-Fill in the Supabase values from step 1. `ANTHROPIC_API_KEY` is optional — see step 2.
+Fill in the Supabase values from step 1.
 
 ### 4. Install and seed
 
@@ -108,6 +103,6 @@ wider use), and sit the seeded paper.
 ## Deploying
 
 Push to a GitHub repo, import it into [Vercel](https://vercel.com/new), and
-add the same four environment variables from `.env.local` in the Vercel
+add the same three environment variables from `.env.local` in the Vercel
 project settings. Add the deployed URL to Supabase's redirect URL allow-list
 (step 1.5 above).
