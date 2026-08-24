@@ -32,6 +32,45 @@ export async function getPapersForSubject(subjectId: string) {
   return data;
 }
 
+export interface PaperAttemptStatus {
+  attemptId: string;
+  submitted: boolean;
+}
+
+/**
+ * The user's most recent attempt per paper in a subject, keyed by paper_id —
+ * lets the picker show "not started" / "in progress" / "completed" per
+ * paper instead of just listing papers blind.
+ */
+export async function getAttemptStatusForSubject(
+  userId: string,
+  subjectId: string,
+): Promise<Record<string, PaperAttemptStatus>> {
+  const supabase = await createClient();
+  const { data: papers, error: papersErr } = await supabase
+    .from("papers")
+    .select("id")
+    .eq("subject_id", subjectId);
+  if (papersErr) throw papersErr;
+  const paperIds = (papers ?? []).map((p) => p.id);
+  if (paperIds.length === 0) return {};
+
+  const { data: attempts, error } = await supabase
+    .from("attempts")
+    .select("id, paper_id, submitted_at, started_at")
+    .eq("user_id", userId)
+    .in("paper_id", paperIds)
+    .order("started_at", { ascending: false });
+  if (error) throw error;
+
+  const status: Record<string, PaperAttemptStatus> = {};
+  for (const a of attempts ?? []) {
+    if (status[a.paper_id]) continue; // already have the most recent one
+    status[a.paper_id] = { attemptId: a.id, submitted: a.submitted_at !== null };
+  }
+  return status;
+}
+
 /** First paper in the subject the user hasn't submitted an attempt for yet. */
 export async function getNextUnattemptedPaper(userId: string, subjectId: string) {
   const supabase = await createClient();

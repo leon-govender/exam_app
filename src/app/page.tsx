@@ -108,7 +108,11 @@ export default async function DashboardPage() {
                 const pct = r?.overallPct ?? 0;
                 const pill = severityPill(pct);
                 return (
-                  <div key={s.id} className="rounded-lg border border-border bg-paper p-4">
+                  <Link
+                    key={s.id}
+                    href={`/subjects/${s.id}`}
+                    className="rounded-lg border border-border bg-paper p-4 hover:border-gold"
+                  >
                     <div className="mb-2 flex items-start justify-between">
                       <span className="text-sm font-semibold">{s.name}</span>
                       <span className="font-mono text-xl tabular-nums">{pct}%</span>
@@ -129,7 +133,7 @@ export default async function DashboardPage() {
                           : pill.label}
                       </span>
                     </div>
-                  </div>
+                  </Link>
                 );
               })}
             </div>
