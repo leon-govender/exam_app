@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { createServiceClient } from "@/lib/supabase/service";
 import { gradeAnswer, gradeSteppedAnswer, type MarkingPoint, type MarkingPointStep } from "@/lib/grader";
+import { markAnswer, type MarkResult } from "@/lib/gemini";
 
 export async function logout() {
   const supabase = await createClient();
@@ -82,7 +83,7 @@ export async function submitAttempt(
 
   const { data: questions, error: qErr } = await supabase
     .from("questions")
-    .select("id, marks, answer_mode")
+    .select("id, text, marks, answer_mode")
     .eq("paper_id", attempt.paper_id);
   if (qErr) throw qErr;
 
@@ -92,64 +93,103 @@ export async function submitAttempt(
   const service = createServiceClient();
   const { data: memos, error: mErr } = await service
     .from("memo_answers")
-    .select("question_id, marking_points")
+    .select("question_id, model_answer, marking_notes, marking_points")
     .in(
       "question_id",
       questions.map((q) => q.id),
     );
   if (mErr) throw mErr;
-  const memoByQuestion = new Map(memos.map((m) => [m.question_id, m.marking_points]));
+  const memoByQuestion = new Map(memos.map((m) => [m.question_id, m]));
 
-  const results = questions.map((q) => {
-    const answer = answers[q.id];
-    const markingPoints = memoByQuestion.get(q.id) ?? null;
+  const useAI = Boolean(process.env.GEMINI_API_KEY);
 
-    if (!markingPoints) {
-      return {
-        attempt_id: attemptId,
-        question_id: q.id,
-        answer_text: answer?.mode === "text" ? answer.text : null,
-        step_answers: answer?.mode === "stepped_mcq" ? answer.steps : null,
-        marks_awarded: 0,
-        marks_possible: q.marks,
-        ai_feedback: "No memo available for this question yet.",
-      };
+  // Free-text answers go through Gemini when a key is configured, with a
+  // fallback to the deterministic grader on any failure (Gemini's free
+  // tier has tighter, less predictable quotas than a paid API, so a
+  // marking hiccup should degrade gracefully rather than block submission).
+  async function markText(params: {
+    questionText: string;
+    marksPossible: number;
+    modelAnswer: string;
+    markingNotes: string | null;
+    markingPoints: MarkingPoint[];
+    studentAnswer: string;
+  }): Promise<MarkResult> {
+    if (useAI) {
+      try {
+        return await markAnswer({
+          questionText: params.questionText,
+          marksPossible: params.marksPossible,
+          modelAnswer: params.modelAnswer,
+          markingNotes: params.markingNotes,
+          studentAnswer: params.studentAnswer,
+        });
+      } catch (err) {
+        console.error("Gemini marking failed, falling back to keyword grader:", err);
+      }
     }
+    return gradeAnswer({
+      marksPossible: params.marksPossible,
+      markingPoints: params.markingPoints,
+      studentAnswer: params.studentAnswer,
+    });
+  }
 
-    if (q.answer_mode === "stepped_mcq") {
-      const stepAnswers = answer?.mode === "stepped_mcq" ? answer.steps : {};
-      const mark = gradeSteppedAnswer({
+  const results = await Promise.all(
+    questions.map(async (q) => {
+      const answer = answers[q.id];
+      const memo = memoByQuestion.get(q.id) ?? null;
+
+      if (!memo || !memo.marking_points) {
+        return {
+          attempt_id: attemptId,
+          question_id: q.id,
+          answer_text: answer?.mode === "text" ? answer.text : null,
+          step_answers: answer?.mode === "stepped_mcq" ? answer.steps : null,
+          marks_awarded: 0,
+          marks_possible: q.marks,
+          ai_feedback: "No memo available for this question yet.",
+        };
+      }
+
+      if (q.answer_mode === "stepped_mcq") {
+        const stepAnswers = answer?.mode === "stepped_mcq" ? answer.steps : {};
+        const mark = gradeSteppedAnswer({
+          marksPossible: q.marks,
+          steps: memo.marking_points as unknown as MarkingPointStep[],
+          stepAnswers,
+        });
+        return {
+          attempt_id: attemptId,
+          question_id: q.id,
+          answer_text: null,
+          step_answers: stepAnswers,
+          marks_awarded: mark.marks_awarded,
+          marks_possible: q.marks,
+          ai_feedback: mark.feedback,
+        };
+      }
+
+      const studentAnswer = answer?.mode === "text" ? answer.text : "";
+      const mark = await markText({
+        questionText: q.text,
         marksPossible: q.marks,
-        steps: markingPoints as unknown as MarkingPointStep[],
-        stepAnswers,
+        modelAnswer: memo.model_answer,
+        markingNotes: memo.marking_notes,
+        markingPoints: memo.marking_points as unknown as MarkingPoint[],
+        studentAnswer,
       });
       return {
         attempt_id: attemptId,
         question_id: q.id,
-        answer_text: null,
-        step_answers: stepAnswers,
+        answer_text: studentAnswer,
+        step_answers: null,
         marks_awarded: mark.marks_awarded,
         marks_possible: q.marks,
         ai_feedback: mark.feedback,
       };
-    }
-
-    const studentAnswer = answer?.mode === "text" ? answer.text : "";
-    const mark = gradeAnswer({
-      marksPossible: q.marks,
-      markingPoints: markingPoints as unknown as MarkingPoint[],
-      studentAnswer,
-    });
-    return {
-      attempt_id: attemptId,
-      question_id: q.id,
-      answer_text: studentAnswer,
-      step_answers: null,
-      marks_awarded: mark.marks_awarded,
-      marks_possible: q.marks,
-      ai_feedback: mark.feedback,
-    };
-  });
+    }),
+  );
 
   const { error: insertErr } = await supabase
     .from("attempt_answers")
