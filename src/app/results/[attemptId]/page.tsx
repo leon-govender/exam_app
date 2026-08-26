@@ -137,12 +137,9 @@ export default async function ResultsPage({
           )}
 
           <Explainer label="How this was marked">
-            Free-text answers were marked by matching keywords and numbers from the
-            memo, not by understanding the reasoning behind them — a correct idea
-            phrased differently might not get credit. Calculation questions were marked
-            step by step against fixed choices instead. Treat this as a first pass, not
-            the final word; check a few answers against the memo yourself before
-            trusting the score.
+            {process.env.GEMINI_API_KEY
+              ? "Free-text answers were marked by AI against the memo, with a specific note on what was missing rather than just a keyword match. Calculation questions were marked step by step against fixed choices instead. Treat this as a first pass, not the final word; check a few answers against the memo yourself before trusting the score."
+              : "Free-text answers were marked by matching keywords and numbers from the memo, not by understanding the reasoning behind them — a correct idea phrased differently might not get credit. Calculation questions were marked step by step against fixed choices instead. Treat this as a first pass, not the final word; check a few answers against the memo yourself before trusting the score."}
           </Explainer>
           </div>
         </div>
