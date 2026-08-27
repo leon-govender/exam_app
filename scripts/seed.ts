@@ -21,8 +21,9 @@ import * as physicalSciencesP1Prelim2023 from "./seed-data/physical-sciences-p1-
 import * as physicalSciencesP2Prelim2023 from "./seed-data/physical-sciences-p2-prelim2023";
 import * as physicalSciencesP2Prelim2024 from "./seed-data/physical-sciences-p2-prelim2024";
 import * as mathematicsP1Nov2025 from "./seed-data/mathematics-p1-nov2025";
+import * as mathematicsP2Nov2025 from "./seed-data/mathematics-p2-nov2025";
 
-const datasets = [geographyP1Pilot, geographyP1Nov2025, geographyP1Prelim2023, geographyP2Prelim2023, geographyP1Prelim2024, geographyP2Prelim2024, geographyP2Nov2025, geographyP1Nov2024, geographyP2Nov2024, physicalSciencesP1Nov2025, physicalSciencesP1Nov2024, physicalSciencesP2Nov2025, physicalSciencesP2Nov2024, physicalSciencesP1Prelim2023, physicalSciencesP2Prelim2023, physicalSciencesP2Prelim2024, mathematicsP1Nov2025];
+const datasets = [geographyP1Pilot, geographyP1Nov2025, geographyP1Prelim2023, geographyP2Prelim2023, geographyP1Prelim2024, geographyP2Prelim2024, geographyP2Nov2025, geographyP1Nov2024, geographyP2Nov2024, physicalSciencesP1Nov2025, physicalSciencesP1Nov2024, physicalSciencesP2Nov2025, physicalSciencesP2Nov2024, physicalSciencesP1Prelim2023, physicalSciencesP2Prelim2023, physicalSciencesP2Prelim2024, mathematicsP1Nov2025, mathematicsP2Nov2025];
 
 // Shape shared by every seed-data file. `marking_points` (free-text grading)
 // and `steps` (stepped-MCQ grading) are mutually exclusive per question, but
