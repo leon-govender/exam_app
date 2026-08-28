@@ -134,6 +134,26 @@ export async function getNextExam(): Promise<UpcomingExam | null> {
   };
 }
 
+/** For each subject, the date of its soonest exam_schedule entry that hasn't happened yet. */
+export async function getNextExamDatesBySubject(): Promise<Record<string, string>> {
+  const supabase = await createClient();
+  const today = new Date().toISOString().slice(0, 10);
+
+  const { data, error } = await supabase
+    .from("exam_schedule")
+    .select("subject_id, exam_date")
+    .gte("exam_date", today)
+    .order("exam_date", { ascending: true });
+  if (error) throw error;
+
+  const dates: Record<string, string> = {};
+  for (const row of data ?? []) {
+    // Rows arrive earliest-first, so the first one seen per subject is its next exam.
+    if (!(row.subject_id in dates)) dates[row.subject_id] = row.exam_date;
+  }
+  return dates;
+}
+
 export async function getPaperWithQuestions(paperId: string) {
   const supabase = await createClient();
   const { data: paper, error: paperErr } = await supabase

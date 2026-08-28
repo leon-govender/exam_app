@@ -3,7 +3,13 @@ import { redirect } from "next/navigation";
 import { AppHeader } from "@/components/AppHeader";
 import { Explainer } from "@/components/Explainer";
 import { FrameChrome } from "@/components/FrameChrome";
-import { getCurrentUser, getSubjects, getNextUnattemptedPaper, getNextExam } from "@/lib/queries";
+import {
+  getCurrentUser,
+  getSubjects,
+  getNextUnattemptedPaper,
+  getNextExam,
+  getNextExamDatesBySubject,
+} from "@/lib/queries";
 import { getSubjectReadiness } from "@/lib/gap-analysis";
 import { startAttempt } from "@/app/actions";
 
@@ -42,10 +48,21 @@ export default async function DashboardPage() {
   const subjects = await getSubjects();
   const readiness = await getSubjectReadiness(user.id);
   const nextExam = await getNextExam();
+  const nextExamDates = await getNextExamDatesBySubject();
 
+  // Ranks subjects by urgency, not just weakness: a subject with an
+  // imminent exam should outrank one that's further from ready but not
+  // being examined for months. Subjects with no scheduled exam are treated
+  // as low-urgency (a full year out) so they don't get lost entirely.
   const weakest = subjects
-    .map((s) => ({ subject: s, pct: readiness[s.id]?.overallPct ?? 0 }))
-    .sort((a, b) => a.pct - b.pct)[0];
+    .map((s) => {
+      const pct = readiness[s.id]?.overallPct ?? 0;
+      const examDate = nextExamDates[s.id];
+      const daysToExam = examDate ? Math.max(daysUntil(examDate), 1) : 365;
+      const urgency = (100 - pct) / daysToExam;
+      return { subject: s, pct, daysToExam: examDate ? daysToExam : null, urgency };
+    })
+    .sort((a, b) => b.urgency - a.urgency)[0];
 
   const nextPaper = weakest
     ? await getNextUnattemptedPaper(user.id, weakest.subject.id)
@@ -145,7 +162,10 @@ export default async function DashboardPage() {
           {nextPaper && weakest && (
             <div className="mt-10 flex flex-wrap items-center justify-between gap-3 border-t border-border-soft pt-6">
               <p className="text-sm text-ink-2">
-                Weakest right now: <b className="text-ink">{weakest.subject.name}</b>
+                Focus here next: <b className="text-ink">{weakest.subject.name}</b>
+                {weakest.daysToExam !== null && (
+                  <span className="text-ink-2"> · exam in {weakest.daysToExam}d</span>
+                )}
               </p>
               <form action={startAttempt.bind(null, nextPaper.id)}>
                 <button
