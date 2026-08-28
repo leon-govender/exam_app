@@ -27,7 +27,9 @@ export async function getPapersForSubject(subjectId: string) {
     .from("papers")
     .select("*")
     .eq("subject_id", subjectId)
-    .order("year", { ascending: false });
+    .order("paper_number", { ascending: true })
+    .order("year", { ascending: false })
+    .order("exam_diet", { ascending: true });
   if (error) throw error;
   return data;
 }

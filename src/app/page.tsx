@@ -111,7 +111,7 @@ export default async function DashboardPage() {
                   <Link
                     key={s.id}
                     href={`/subjects/${s.id}`}
-                    className="rounded-lg border border-border bg-paper p-4 hover:border-gold"
+                    className="group rounded-lg border border-border bg-paper p-4 hover:border-gold"
                   >
                     <div className="mb-2 flex items-start justify-between">
                       <span className="text-sm font-semibold">{s.name}</span>
@@ -123,7 +123,7 @@ export default async function DashboardPage() {
                         style={{ width: `${pct}%`, background: barColor(pct) }}
                       />
                     </div>
-                    <div className="flex items-center justify-between text-xs text-ink-2">
+                    <div className="mb-3 flex items-center justify-between text-xs text-ink-2">
                       <span>
                         {r?.papersAttempted ?? 0} paper{r?.papersAttempted === 1 ? "" : "s"} sat
                       </span>
@@ -132,6 +132,9 @@ export default async function DashboardPage() {
                           ? `${r.gapCount} gap${r.gapCount === 1 ? "" : "s"}`
                           : pill.label}
                       </span>
+                    </div>
+                    <div className="flex items-center justify-end gap-1 text-xs text-ink-2 group-hover:text-gold">
+                      View papers <span aria-hidden>→</span>
                     </div>
                   </Link>
                 );
