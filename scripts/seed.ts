@@ -28,8 +28,10 @@ import * as mathematicsP1Nov2024 from "./seed-data/mathematics-p1-nov2024";
 import * as mathematicsP2Nov2024 from "./seed-data/mathematics-p2-nov2024";
 import * as advancedMathematicsApCalcAb from "./seed-data/advanced-mathematics-ap-calc-ab";
 import * as advancedMathematicsIbAaHl from "./seed-data/advanced-mathematics-ib-aa-hl";
+import * as advancedMathematicsApCalcAb2027 from "./seed-data/advanced-mathematics-ap-calc-ab-2027";
+import * as advancedMathematicsIbAaHl2027 from "./seed-data/advanced-mathematics-ib-aa-hl-2027";
 
-const datasets = [geographyP1Pilot, geographyP1Nov2025, geographyP1Prelim2023, geographyP2Prelim2023, geographyP1Prelim2024, geographyP2Prelim2024, geographyP2Nov2025, geographyP1Nov2024, geographyP2Nov2024, physicalSciencesP1Nov2025, physicalSciencesP1Nov2024, physicalSciencesP2Nov2025, physicalSciencesP2Nov2024, physicalSciencesP1Prelim2023, physicalSciencesP2Prelim2023, physicalSciencesP2Prelim2024, mathematicsP1Nov2025, mathematicsP2Nov2025, mathematicsP1Nov2023, mathematicsP2Nov2023, mathematicsP1Nov2024, mathematicsP2Nov2024, advancedMathematicsApCalcAb, advancedMathematicsIbAaHl];
+const datasets = [geographyP1Pilot, geographyP1Nov2025, geographyP1Prelim2023, geographyP2Prelim2023, geographyP1Prelim2024, geographyP2Prelim2024, geographyP2Nov2025, geographyP1Nov2024, geographyP2Nov2024, physicalSciencesP1Nov2025, physicalSciencesP1Nov2024, physicalSciencesP2Nov2025, physicalSciencesP2Nov2024, physicalSciencesP1Prelim2023, physicalSciencesP2Prelim2023, physicalSciencesP2Prelim2024, mathematicsP1Nov2025, mathematicsP2Nov2025, mathematicsP1Nov2023, mathematicsP2Nov2023, mathematicsP1Nov2024, mathematicsP2Nov2024, advancedMathematicsApCalcAb, advancedMathematicsIbAaHl, advancedMathematicsApCalcAb2027, advancedMathematicsIbAaHl2027];
 
 // Shape shared by every seed-data file. `marking_points` (free-text grading)
 // and `steps` (stepped-MCQ grading) are mutually exclusive per question, but
@@ -194,13 +196,15 @@ async function seedDataset(supabase: SupabaseClient, ds: SeedDataset) {
 
   console.log(`Seeding ${questions.length} questions + memos`);
   for (const [i, q] of questions.entries()) {
-    const { data: existingQ } = await supabase
+    let existingQQuery = supabase
       .from("questions")
       .select("id")
       .eq("paper_id", paperId)
-      .eq("number", q.number)
-      .eq("sub_number", q.sub_number)
-      .maybeSingle();
+      .eq("number", q.number);
+    existingQQuery = q.sub_number === null
+      ? existingQQuery.is("sub_number", null)
+      : existingQQuery.eq("sub_number", q.sub_number);
+    const { data: existingQ } = await existingQQuery.maybeSingle();
 
     // Calculation questions can carry `steps` (one MCQ per marking point)
     // instead of free-text `marking_points`. step_options (public: label +
