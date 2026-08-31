@@ -67,7 +67,7 @@ export const topics = [
 
 export const paper = {
   year: 2026,
-  exam_diet: "Practice",
+  exam_diet: "Practice A",
   paper_number: "IB AA HL",
   duration_minutes: 120,
   total_marks: 88,
