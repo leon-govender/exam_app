@@ -205,6 +205,26 @@ export interface Database {
         Update: Partial<Database["public"]["Tables"]["exam_schedule"]["Insert"]>;
         Relationships: [];
       };
+      guardian_links: {
+        Row: {
+          id: string;
+          guardian_user_id: string;
+          guardian_email: string;
+          student_user_id: string;
+          student_email: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          guardian_user_id: string;
+          guardian_email: string;
+          student_user_id: string;
+          student_email: string;
+          created_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["guardian_links"]["Insert"]>;
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;
