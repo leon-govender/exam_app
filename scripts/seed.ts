@@ -30,8 +30,9 @@ import * as advancedMathematicsApCalcAb from "./seed-data/advanced-mathematics-a
 import * as advancedMathematicsIbAaHl from "./seed-data/advanced-mathematics-ib-aa-hl";
 import * as advancedMathematicsApCalcAbPracticeB from "./seed-data/advanced-mathematics-ap-calc-ab-practice-b";
 import * as advancedMathematicsIbAaHlPracticeB from "./seed-data/advanced-mathematics-ib-aa-hl-practice-b";
+import * as advancedMathematicsApCalcAbPracticeC from "./seed-data/advanced-mathematics-ap-calc-ab-practice-c";
 
-const datasets = [geographyP1Pilot, geographyP1Nov2025, geographyP1Prelim2023, geographyP2Prelim2023, geographyP1Prelim2024, geographyP2Prelim2024, geographyP2Nov2025, geographyP1Nov2024, geographyP2Nov2024, physicalSciencesP1Nov2025, physicalSciencesP1Nov2024, physicalSciencesP2Nov2025, physicalSciencesP2Nov2024, physicalSciencesP1Prelim2023, physicalSciencesP2Prelim2023, physicalSciencesP2Prelim2024, mathematicsP1Nov2025, mathematicsP2Nov2025, mathematicsP1Nov2023, mathematicsP2Nov2023, mathematicsP1Nov2024, mathematicsP2Nov2024, advancedMathematicsApCalcAb, advancedMathematicsIbAaHl, advancedMathematicsApCalcAbPracticeB, advancedMathematicsIbAaHlPracticeB];
+const datasets = [geographyP1Pilot, geographyP1Nov2025, geographyP1Prelim2023, geographyP2Prelim2023, geographyP1Prelim2024, geographyP2Prelim2024, geographyP2Nov2025, geographyP1Nov2024, geographyP2Nov2024, physicalSciencesP1Nov2025, physicalSciencesP1Nov2024, physicalSciencesP2Nov2025, physicalSciencesP2Nov2024, physicalSciencesP1Prelim2023, physicalSciencesP2Prelim2023, physicalSciencesP2Prelim2024, mathematicsP1Nov2025, mathematicsP2Nov2025, mathematicsP1Nov2023, mathematicsP2Nov2023, mathematicsP1Nov2024, mathematicsP2Nov2024, advancedMathematicsApCalcAb, advancedMathematicsIbAaHl, advancedMathematicsApCalcAbPracticeB, advancedMathematicsIbAaHlPracticeB, advancedMathematicsApCalcAbPracticeC];
 
 // Shape shared by every seed-data file. `marking_points` (free-text grading)
 // and `steps` (stepped-MCQ grading) are mutually exclusive per question, but
