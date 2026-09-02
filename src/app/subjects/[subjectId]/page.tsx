@@ -7,6 +7,18 @@ import { getCurrentUser, getPapersForSubject, getAttemptStatusForSubject } from 
 import { formatExamDiet } from "@/lib/format";
 import { startAttempt } from "@/app/actions";
 
+type Paper = Awaited<ReturnType<typeof getPapersForSubject>>[number];
+
+function groupByPaperNumber(papers: Paper[]): [string, Paper[]][] {
+  const groups = new Map<string, Paper[]>();
+  for (const p of papers) {
+    const group = groups.get(p.paper_number);
+    if (group) group.push(p);
+    else groups.set(p.paper_number, [p]);
+  }
+  return [...groups];
+}
+
 export default async function SubjectPapersPage({
   params,
 }: {
@@ -51,53 +63,62 @@ export default async function SubjectPapersPage({
             {papers.length === 0 ? (
               <p className="text-sm text-ink-2">No papers seeded for this subject yet.</p>
             ) : (
-              <div className="flex flex-col gap-3">
-                {papers.map((p) => {
-                  const s = status[p.id];
-                  return (
-                    <div
-                      key={p.id}
-                      className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border bg-paper p-4"
-                    >
-                      <div>
-                        <p className="text-sm font-semibold">
-                          {p.paper_number} · {formatExamDiet(p.exam_diet, p.year)}
-                        </p>
-                        <p className="mt-0.5 font-mono text-xs text-ink-2">
-                          {p.total_marks} marks · {Math.round(p.duration_minutes / 60)}h
-                          {p.duration_minutes % 60 ? ` ${p.duration_minutes % 60}m` : ""}
-                        </p>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        {s?.submitted && (
-                          <Link
-                            href={`/results/${s.attemptId}`}
-                            className="rounded-lg border border-border px-3 py-2 text-xs font-semibold text-ink-2 hover:text-ink"
+              <div className="flex flex-col gap-6">
+                {groupByPaperNumber(papers).map(([paperNumber, group]) => (
+                  <div key={paperNumber}>
+                    <p className="mb-3 font-mono text-[11px] uppercase tracking-wider text-ink-2">
+                      {paperNumber}
+                    </p>
+                    <div className="flex flex-col gap-3">
+                      {group.map((p) => {
+                        const s = status[p.id];
+                        return (
+                          <div
+                            key={p.id}
+                            className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border bg-paper p-4"
                           >
-                            View results
-                          </Link>
-                        )}
-                        {s && !s.submitted ? (
-                          <Link
-                            href={`/exam/${s.attemptId}`}
-                            className="rounded-lg bg-ink px-3 py-2 text-xs font-semibold text-paper"
-                          >
-                            Continue →
-                          </Link>
-                        ) : (
-                          <form action={startAttempt.bind(null, p.id)}>
-                            <button
-                              type="submit"
-                              className="rounded-lg bg-ink px-3 py-2 text-xs font-semibold text-paper"
-                            >
-                              {s?.submitted ? "Retake" : "Start"} →
-                            </button>
-                          </form>
-                        )}
-                      </div>
+                            <div>
+                              <p className="text-sm font-semibold">
+                                {formatExamDiet(p.exam_diet, p.year)}
+                              </p>
+                              <p className="mt-0.5 font-mono text-xs text-ink-2">
+                                {p.total_marks} marks · {Math.round(p.duration_minutes / 60)}h
+                                {p.duration_minutes % 60 ? ` ${p.duration_minutes % 60}m` : ""}
+                              </p>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              {s?.submitted && (
+                                <Link
+                                  href={`/results/${s.attemptId}`}
+                                  className="rounded-lg border border-border px-3 py-2 text-xs font-semibold text-ink-2 hover:text-ink"
+                                >
+                                  View results
+                                </Link>
+                              )}
+                              {s && !s.submitted ? (
+                                <Link
+                                  href={`/exam/${s.attemptId}`}
+                                  className="rounded-lg bg-ink px-3 py-2 text-xs font-semibold text-paper"
+                                >
+                                  Continue →
+                                </Link>
+                              ) : (
+                                <form action={startAttempt.bind(null, p.id)}>
+                                  <button
+                                    type="submit"
+                                    className="rounded-lg bg-ink px-3 py-2 text-xs font-semibold text-paper"
+                                  >
+                                    {s?.submitted ? "Retake" : "Start"} →
+                                  </button>
+                                </form>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
-                  );
-                })}
+                  </div>
+                ))}
               </div>
             )}
           </div>

@@ -10,14 +10,19 @@ export function AppHeader() {
       >
         MatricPrep
       </Link>
-      <form action={logout}>
-        <button
-          type="submit"
-          className="rounded-md border border-border px-3 py-1.5 text-xs text-ink-2 hover:text-ink"
-        >
-          Sign out
-        </button>
-      </form>
+      <div className="flex items-center gap-4">
+        <Link href="/family" className="text-xs text-ink-2 hover:text-ink">
+          Family
+        </Link>
+        <form action={logout}>
+          <button
+            type="submit"
+            className="rounded-md border border-border px-3 py-1.5 text-xs text-ink-2 hover:text-ink"
+          >
+            Sign out
+          </button>
+        </form>
+      </div>
     </header>
   );
 }
