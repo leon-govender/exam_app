@@ -205,6 +205,24 @@ export interface Database {
         Update: Partial<Database["public"]["Tables"]["exam_schedule"]["Insert"]>;
         Relationships: [];
       };
+      study_notes: {
+        Row: {
+          id: string;
+          user_id: string;
+          topic_id: string;
+          content: string;
+          generated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          topic_id: string;
+          content: string;
+          generated_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["study_notes"]["Insert"]>;
+        Relationships: [];
+      };
       guardian_links: {
         Row: {
           id: string;
