@@ -48,7 +48,7 @@ export async function markAnswer(params: {
   }
 
   const response = await client().models.generateContent({
-    model: "gemini-2.5-flash",
+    model: "gemini-3.6-flash",
     contents:
       `Question (${marksPossible} marks): ${questionText}\n\n` +
       `Memo answer: ${modelAnswer}\n` +
@@ -72,4 +72,37 @@ export async function markAnswer(params: {
     marks_awarded: Math.max(0, Math.min(marksPossible, parsed.marks_awarded)),
     feedback: parsed.feedback,
   };
+}
+
+export async function generateStudyNotes(params: {
+  topicName: string;
+  subjectName: string;
+  recentMistakes: string[];
+}): Promise<string> {
+  const { topicName, subjectName, recentMistakes } = params;
+
+  const response = await client().models.generateContent({
+    model: "gemini-3.6-flash",
+    contents:
+      `Subject: ${subjectName}\nTopic: ${topicName}\n` +
+      (recentMistakes.length
+        ? `\nThis student's recent mistakes on this topic (from marked attempts):\n` +
+          recentMistakes.map((m) => `- ${m}`).join("\n") +
+          "\n"
+        : "") +
+      `\nWrite focused study notes on this topic for this student.`,
+    config: {
+      systemInstruction:
+        "You are a South African CAPS/NSC tutor writing study notes for a Grade 12 student on a specific topic. " +
+        "Structure the notes as: a short explanation of the core concept(s) (2-4 sentences), the key formulas/rules if any, " +
+        "one worked example, and a short list of common mistakes to avoid. " +
+        "If the student's recent mistakes are given, prioritise addressing those specifically rather than writing generic notes. " +
+        "Write in plain text only — no markdown symbols (no #, *, **, -, or backticks). Use short paragraphs and blank lines between " +
+        "sections instead. Keep it skimmable and exam-focused, not a full textbook chapter.",
+    },
+  });
+
+  const text = response.text;
+  if (!text) throw new Error("Gemini did not return study notes");
+  return text.trim();
 }

@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getCurrentUser } from "@/lib/queries";
 import { getSubjectReadiness } from "@/lib/gap-analysis";
 import { scheduleRetest } from "@/app/actions";
+import { StudyNotesPanel } from "../StudyNotesPanel";
 
 function videoSearchLabel(url: string, fallback: string): string {
   try {
@@ -33,6 +34,13 @@ export default async function StudyPage({
     .eq("id", topicId)
     .single();
   if (!topic) notFound();
+
+  const { data: existingNotes } = await supabase
+    .from("study_notes")
+    .select("content, generated_at")
+    .eq("user_id", user.id)
+    .eq("topic_id", topicId)
+    .maybeSingle();
 
   // Performance + recent AI feedback on this topic, most recent attempt first.
   const { data: answerRows } = await supabase
@@ -243,6 +251,12 @@ export default async function StudyPage({
               Schedule a short retest in 5 days
             </button>
           </form>
+
+          <StudyNotesPanel
+            topicId={topicId}
+            initialContent={existingNotes?.content ?? null}
+            initialGeneratedAt={existingNotes?.generated_at ?? null}
+          />
 
           <Explainer label="About retests">
             Scheduling a retest just sets a reminder date here on the dashboard — it doesn&apos;t
