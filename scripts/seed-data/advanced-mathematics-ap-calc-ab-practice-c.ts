@@ -288,11 +288,11 @@ export const questions: QuestionSeed[] = [
     text: "Determine whether f(x) = e^x/x² has any inflection points, justifying your answer.",
     marks: 5, topicKey: "curve_sketching", cognitiveLevelName: "Proof & Synthesis",
     model_answer: "f''(x) = e^x(x²−4x+6)/x⁴. Setting the numerator's quadratic factor to zero: x²−4x+6=0 has discriminant 16−24=−8 < 0, so no real solutions — f'' is never zero (and, since it's positive at any test point, always positive), so f has no inflection points.",
-    marking_notes: "Award marks for reducing to the quadratic x²−4x+6=0, correctly computing the discriminant, and the correct conclusion that no inflection point exists.",
-    marking_points: [
-      { marks: 2, description: "Sets f''(x) = 0 and correctly reduces to x² − 4x + 6 = 0", keywords: ["x2 4x 6", "quadratic", "f x 0"] },
-      { marks: 2, description: "Computes the discriminant and finds it negative (16 − 24 = −8)", keywords: ["discriminant", "negative", "-8"] },
-      { marks: 1, description: "Concludes there are no real solutions, so no inflection points exist", keywords: ["no real", "no inflection", "none exist"] },
+    marking_notes: "Three steps: reduce to the quadratic, compute the discriminant, then conclude.",
+    steps: [
+      { marks: 2, description: "Setting f''(x) = 0 reduces to:", options: ["x² − 4x + 6 = 0", "x² + 4x + 6 = 0", "x² − 4x − 6 = 0", "4x − 6 = 0"], correctIndex: 0 },
+      { marks: 2, description: "The discriminant of this quadratic is:", options: ["16 − 24 = −8 (negative)", "16 + 24 = 40 (positive)", "16 − 24 = −8 but treated as positive", "0 (repeated root)"], correctIndex: 0 },
+      { marks: 1, description: "Conclusion:", options: ["No real solutions, so f has no inflection points", "Two real solutions, so f has two inflection points", "One repeated real solution, so f has one inflection point", "Cannot be determined"], correctIndex: 0 },
     ],
   },
 
@@ -320,11 +320,10 @@ export const questions: QuestionSeed[] = [
     text: "Determine the concavity of C(x) = 40 ln(x + 1) − 3x at x ≈ 12.33, and interpret what it means for the drug's concentration.",
     marks: 4, topicKey: "curve_sketching", cognitiveLevelName: "Proof & Synthesis",
     model_answer: "C''(x) = −40/(x+1)²; C''(12.33) ≈ −0.225 < 0, concave down — confirms a maximum, meaning the rate at which concentration is rising is slowing as it approaches its peak.",
-    marking_notes: "Award marks for the correct concavity conclusion and a coherent interpretation (rate of increase slowing near the peak).",
-    marking_points: [
-      { marks: 1, description: "States C''(x) is negative / concave down at x ≈ 12.33", keywords: ["concave down", "negative"] },
-      { marks: 1, description: "Links this to confirming a maximum", keywords: ["confirms", "maximum"] },
-      { marks: 2, description: "Interprets in context: rate of increase slowing as concentration approaches its peak", keywords: ["slowing", "diminishing", "rate of increase"] },
+    marking_notes: "Two steps: the concavity conclusion, then the interpretation.",
+    steps: [
+      { marks: 2, description: "Concavity at x ≈ 12.33:", options: ["Concave down — confirms a maximum", "Concave up — confirms a minimum", "Concave down — confirms a minimum", "Concave up — confirms a maximum"], correctIndex: 0 },
+      { marks: 2, description: "What this means for the drug's concentration:", options: ["The rate of increase is slowing as concentration approaches its peak", "The rate of increase is accelerating", "Concentration is constant", "Concentration is about to spike suddenly"], correctIndex: 0 },
     ],
   },
   {
@@ -332,10 +331,10 @@ export const questions: QuestionSeed[] = [
     text: "Solve C(x) = 0 for x > 0, correct to two decimal places, and interpret the result in context.",
     marks: 4, topicKey: "logs_exponentials", cognitiveLevelName: "Proof & Synthesis",
     model_answer: "Solving 40 ln(x+1) − 3x = 0 numerically for x > 0 gives x ≈ 53.25 — beyond this point the linear elimination term overtakes the logarithmic term and the modelled concentration would turn negative, i.e. the drug is effectively cleared by this time.",
-    marking_notes: "Award marks for the correct numeric root and for a coherent interpretation (the point beyond which the model's concentration turns negative / the drug is effectively cleared).",
-    marking_points: [
-      { marks: 2, description: "Correct numeric root x ≈ 53.25", keywords: ["53 25", "53 2"] },
-      { marks: 2, description: "Interprets as the point where the modelled concentration turns negative / drug effectively cleared", keywords: ["negative", "cleared", "breaks down"] },
+    marking_notes: "Two steps: the numeric root, then the interpretation.",
+    steps: [
+      { marks: 2, description: "Root:", options: ["x ≈ 53.25", "x ≈ 45.00", "x ≈ 60.00", "x ≈ 40.00"], correctIndex: 0 },
+      { marks: 2, description: "Interpretation:", options: ["Beyond this point, the modelled concentration turns negative — the drug is effectively cleared", "Beyond this point, concentration is maximised", "This is where the drug first becomes effective", "This is where the concentration rate is fastest"], correctIndex: 0 },
     ],
   },
 
@@ -370,10 +369,10 @@ export const questions: QuestionSeed[] = [
     text: "Find the vertical asymptote(s) of f(x) = ln(16 − x²), justifying your answer using limits.",
     marks: 4, topicKey: "curve_sketching", cognitiveLevelName: "Proof & Synthesis",
     model_answer: "As x → 4⁻ or x → −4⁺, 16−x² → 0⁺, so ln(16−x²) → −∞: vertical asymptotes at x = 4 and x = −4.",
-    marking_notes: "Award marks for identifying both asymptote locations and for correctly justifying with a limit argument.",
-    marking_points: [
-      { marks: 2, description: "States both vertical asymptotes x = 4 and x = −4", keywords: ["x 4", "x -4", "vertical asymptote"] },
-      { marks: 2, description: "Justifies via the limit: 16 − x² → 0⁺ so ln → −∞", keywords: ["approaches 0", "tends to 0", "negative infinity"] },
+    marking_notes: "Two steps: the asymptote locations, then the limit justification.",
+    steps: [
+      { marks: 2, description: "Vertical asymptote(s):", options: ["x = 4 and x = −4", "x = 0 only", "x = 16 and x = −16", "none"], correctIndex: 0 },
+      { marks: 2, description: "Justification:", options: ["16 − x² → 0⁺ as x approaches ±4 from inside the domain, so ln → −∞", "16 − x² → ∞, so ln → ∞", "16 − x² → 0⁻, so ln is undefined for a different reason", "The function has no vertical asymptotes"], correctIndex: 0 },
     ],
   },
   {
@@ -381,10 +380,10 @@ export const questions: QuestionSeed[] = [
     text: "Describe the shape of the graph of f(x) = ln(16 − x²), referring to your answers above.",
     marks: 4, topicKey: "curve_sketching", cognitiveLevelName: "Proof & Synthesis",
     model_answer: "A single symmetric hump: since f is even, the curve rises from −∞ (as x → −4⁺) to a maximum at x = 0 (f(0) = ln 16), then falls back to −∞ (as x → 4⁻).",
-    marking_notes: "Award marks for describing the symmetric hump shape and for correctly placing the maximum and both asymptotic falls.",
-    marking_points: [
-      { marks: 2, description: "Describes a single symmetric hump shape (even function, rises then falls)", keywords: ["symmetric", "even function", "hump"] },
-      { marks: 2, description: "Correctly places the maximum at x = 0 with the curve falling to −∞ at both vertical asymptotes", keywords: ["maximum at x 0", "falls to", "negative infinity at both"] },
+    marking_notes: "Two steps: the overall shape, then the maximum/asymptote behaviour.",
+    steps: [
+      { marks: 2, description: "Overall shape:", options: ["A single symmetric hump (even function)", "Two separate monotonic branches", "An always-increasing curve", "An always-decreasing curve"], correctIndex: 0 },
+      { marks: 2, description: "Behaviour at the maximum and asymptotes:", options: ["Rises to a maximum at x = 0, then falls to −∞ at both x = ±4", "Falls to a minimum at x = 0, then rises to +∞ at both x = ±4", "Rises to a maximum at x = 0 with no asymptotes", "Falls continuously from x = −4 to x = 4"], correctIndex: 0 },
     ],
   },
 
@@ -401,11 +400,11 @@ export const questions: QuestionSeed[] = [
     text: "Show that the curve x² + 3xy + y² = 5 has no point where the tangent line is horizontal.",
     marks: 6, topicKey: "curve_sketching", cognitiveLevelName: "Proof & Synthesis",
     model_answer: "A horizontal tangent requires 2x+3y=0, i.e. y=−2x/3. Substituting into the curve: x² − 2x² + 4x²/9 = −5x²/9 = 5, giving x² = −9, which has no real solution — so no point on the curve has a horizontal tangent.",
-    marking_notes: "Award marks for setting up the condition, correctly substituting and simplifying, and the correct 'no real solution' conclusion.",
-    marking_points: [
-      { marks: 2, description: "Sets y' = 0 leading to the condition 2x + 3y = 0, i.e. y = −2x/3", keywords: ["2x 3y 0", "y 2x 3"] },
-      { marks: 2, description: "Substitutes into the curve equation and simplifies to −5x²/9 = 5 (or equivalent)", keywords: ["5x2 9", "substitut"] },
-      { marks: 2, description: "Concludes x² = −9 has no real solution, so no horizontal tangent point exists", keywords: ["no real", "x2 9", "no solution"] },
+    marking_notes: "Three steps: the horizontal-tangent condition, the substitution result, then the conclusion.",
+    steps: [
+      { marks: 2, description: "Horizontal tangent requires:", options: ["2x + 3y = 0, i.e. y = −2x/3", "3x + 2y = 0, i.e. y = −3x/2", "x + y = 0", "2x − 3y = 0"], correctIndex: 0 },
+      { marks: 2, description: "Substituting into the curve simplifies to:", options: ["−5x²/9 = 5, i.e. x² = −9", "5x²/9 = 5, i.e. x² = 9", "−5x² = 5, i.e. x² = −1", "x² = 9"], correctIndex: 0 },
+      { marks: 2, description: "Conclusion:", options: ["No real solution — no point has a horizontal tangent", "Two real solutions x = ±3", "One real solution x = 0", "Infinitely many solutions"], correctIndex: 0 },
     ],
   },
   {
@@ -413,11 +412,11 @@ export const questions: QuestionSeed[] = [
     text: "Show that the curve x² + 3xy + y² = 5 has no point where the tangent line is vertical.",
     marks: 5, topicKey: "curve_sketching", cognitiveLevelName: "Proof & Synthesis",
     model_answer: "A vertical tangent requires 3x+2y=0, i.e. x=−2y/3. Substituting into the curve: 4y²/9 − 2y² + y² = −5y²/9 = 5, giving y² = −9, which has no real solution — so no point on the curve has a vertical tangent.",
-    marking_notes: "Award marks for setting up the condition, correctly substituting and simplifying, and the correct 'no real solution' conclusion.",
-    marking_points: [
-      { marks: 2, description: "Sets the denominator 3x + 2y = 0 leading to x = −2y/3", keywords: ["3x 2y 0", "x 2y 3"] },
-      { marks: 2, description: "Substitutes into the curve equation and simplifies to −5y²/9 = 5 (or equivalent)", keywords: ["5y2 9", "substitut"] },
-      { marks: 1, description: "Concludes y² = −9 has no real solution, so no vertical tangent point exists", keywords: ["no real", "y2 9", "no solution"] },
+    marking_notes: "Three steps: the vertical-tangent condition, the substitution result, then the conclusion.",
+    steps: [
+      { marks: 2, description: "Vertical tangent requires:", options: ["3x + 2y = 0, i.e. x = −2y/3", "2x + 3y = 0, i.e. x = −3y/2", "x + y = 0", "3x − 2y = 0"], correctIndex: 0 },
+      { marks: 2, description: "Substituting into the curve simplifies to:", options: ["−5y²/9 = 5, i.e. y² = −9", "5y²/9 = 5, i.e. y² = 9", "−5y² = 5, i.e. y² = −1", "y² = 9"], correctIndex: 0 },
+      { marks: 1, description: "Conclusion:", options: ["No real solution — no point has a vertical tangent", "Two real solutions y = ±3", "One real solution y = 0", "Infinitely many solutions"], correctIndex: 0 },
     ],
   },
   {

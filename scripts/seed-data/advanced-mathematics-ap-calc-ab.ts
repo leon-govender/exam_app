@@ -324,11 +324,10 @@ export const questions: QuestionSeed[] = [
     text: "Determine the concavity of P(x) = 100 ln(x + 1) − 5x at x = 19, and interpret what it means for the business.",
     marks: 4, topicKey: "curve_sketching", cognitiveLevelName: "Proof & Synthesis",
     model_answer: "P''(x) = −100/(x+1)²; P''(19) ≈ −0.25 < 0, concave down — confirms a maximum, and means profit growth is slowing (diminishing returns) as production increases toward this point.",
-    marking_notes: "Award marks for the correct concavity conclusion and a coherent business interpretation (diminishing returns / slowing growth).",
-    marking_points: [
-      { marks: 1, description: "States P''(x) is negative / concave down at x = 19", keywords: ["concave down", "negative", "p x negative"] },
-      { marks: 1, description: "Links this to confirming a maximum", keywords: ["confirms", "maximum", "confirm max"] },
-      { marks: 2, description: "Interprets in business terms: profit growth slowing / diminishing returns", keywords: ["diminishing returns", "slowing", "slows down", "rate of increase decreasing"] },
+    marking_notes: "Two steps: the concavity conclusion, then the business interpretation.",
+    steps: [
+      { marks: 2, description: "Concavity at x = 19:", options: ["Concave down — confirms a maximum", "Concave up — confirms a minimum", "Concave down — confirms a minimum", "Concave up — confirms a maximum"], correctIndex: 0 },
+      { marks: 2, description: "What this means for the business:", options: ["Profit growth is slowing (diminishing returns) as production increases", "Profit growth is accelerating as production increases", "Profit is constant at this production level", "Profit is about to start increasing rapidly"], correctIndex: 0 },
     ],
   },
   {
@@ -336,10 +335,10 @@ export const questions: QuestionSeed[] = [
     text: "Solve P(x) = 0 for x > 0, correct to two decimal places, and interpret the result in context.",
     marks: 4, topicKey: "logs_exponentials", cognitiveLevelName: "Proof & Synthesis",
     model_answer: "Solving 100 ln(x+1) = 5x numerically for x > 0 gives x ≈ 90.30 (9030 units) — beyond this production level the linear cost overtakes logarithmic revenue growth, and profit turns negative.",
-    marking_notes: "Award marks for the correct numeric root and for a coherent interpretation (break-even / turning negative beyond this point).",
-    marking_points: [
-      { marks: 2, description: "Correct numeric root x ≈ 90.30", keywords: ["90 30", "90 3", "9030"] },
-      { marks: 2, description: "Interprets as the point beyond which profit turns negative / break-even", keywords: ["negative", "break even", "beyond this", "turns negative"] },
+    marking_notes: "Two steps: the numeric root, then the interpretation.",
+    steps: [
+      { marks: 2, description: "Root:", options: ["x ≈ 90.30", "x ≈ 95.00", "x ≈ 80.00", "x ≈ 100.00"], correctIndex: 0 },
+      { marks: 2, description: "Interpretation:", options: ["Beyond this production level, profit turns negative", "Beyond this production level, profit is maximised", "This is where costs equal zero", "This is where revenue is maximised"], correctIndex: 0 },
     ],
   },
 
@@ -374,10 +373,10 @@ export const questions: QuestionSeed[] = [
     text: "Find the vertical asymptote(s) of f(x) = ln(x² − 4), justifying your answer using limits.",
     marks: 4, topicKey: "curve_sketching", cognitiveLevelName: "Proof & Synthesis",
     model_answer: "As x → 2⁺ or x → −2⁻, x²−4 → 0⁺, so ln(x²−4) → −∞: vertical asymptotes at x = 2 and x = −2.",
-    marking_notes: "Award marks for identifying both asymptote locations and for correctly justifying with a limit argument (argument of ln tending to 0⁺).",
-    marking_points: [
-      { marks: 2, description: "States both vertical asymptotes x = 2 and x = −2", keywords: ["x 2 and x 2", "vertical asymptote", "x 2", "x -2"] },
-      { marks: 2, description: "Justifies via the limit: x² − 4 → 0⁺ so ln → −∞", keywords: ["approaches 0", "tends to 0", "negative infinity", "ln approaches"] },
+    marking_notes: "Two steps: the asymptote locations, then the limit justification.",
+    steps: [
+      { marks: 2, description: "Vertical asymptote(s):", options: ["x = 2 and x = −2", "x = 0 only", "x = 4 and x = −4", "none"], correctIndex: 0 },
+      { marks: 2, description: "Justification:", options: ["x² − 4 → 0⁺ as x approaches ±2 from outside the domain, so ln → −∞", "x² − 4 → ∞, so ln → ∞", "x² − 4 → 0⁻, so ln is undefined for a different reason", "The function has no vertical asymptotes"], correctIndex: 0 },
     ],
   },
   {
@@ -385,10 +384,10 @@ export const questions: QuestionSeed[] = [
     text: "Describe the shape of the graph of f(x) = ln(x² − 4), referring to your answers above.",
     marks: 4, topicKey: "curve_sketching", cognitiveLevelName: "Proof & Synthesis",
     model_answer: "Two separate, monotonic branches: the left branch falls from +∞ (as x → −∞) down to −∞ (as x → −2⁻); the right branch rises from −∞ (as x → 2⁺) up to +∞ (as x → ∞); nothing is defined on [−2, 2].",
-    marking_notes: "Award marks for describing both branches' overall shape/direction and for noting the excluded middle strip.",
-    marking_points: [
-      { marks: 2, description: "Describes both branches as monotonic (one decreasing, one increasing)", keywords: ["decreasing", "increasing", "monotonic", "falls", "rises"] },
-      { marks: 2, description: "Notes nothing is defined between x = −2 and x = 2", keywords: ["undefined", "excluded", "gap", "no graph between", "not defined"] },
+    marking_notes: "Two steps: the branch behaviour, then the excluded domain strip.",
+    steps: [
+      { marks: 2, description: "Branch behaviour:", options: ["Left branch falls from +∞ to −∞; right branch rises from −∞ to +∞", "Both branches rise from −∞ to +∞", "Both branches fall from +∞ to −∞", "Left branch rises, right branch falls"], correctIndex: 0 },
+      { marks: 2, description: "Between the asymptotes:", options: ["Nothing is defined for −2 < x < 2", "The function is defined everywhere", "Nothing is defined for x > 2", "Nothing is defined for x < −2"], correctIndex: 0 },
     ],
   },
 
