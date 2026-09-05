@@ -304,11 +304,10 @@ export const questions: QuestionSeed[] = [
     text: "Determine the concavity of V(x) = 50 + 30 ln(x + 1) − 2x at x = 14, and interpret what it means for the investment.",
     marks: 4, topicKey: "curve_sketching", cognitiveLevelName: "Proof & Synthesis",
     model_answer: "V''(x) = −30/(x+1)²; V''(14) ≈ −0.133 < 0, concave down — confirms a maximum, meaning the investment's growth rate is slowing (diminishing returns) as x increases toward this point.",
-    marking_notes: "Award marks for the correct concavity conclusion and a coherent interpretation (diminishing returns / slowing growth).",
-    marking_points: [
-      { marks: 1, description: "States V''(x) is negative / concave down at x = 14", keywords: ["concave down", "negative"] },
-      { marks: 1, description: "Links this to confirming a maximum", keywords: ["confirms", "maximum"] },
-      { marks: 2, description: "Interprets in context: growth slowing / diminishing returns", keywords: ["diminishing returns", "slowing", "slows down"] },
+    marking_notes: "Two steps: the concavity conclusion, then the interpretation.",
+    steps: [
+      { marks: 2, description: "Concavity at x = 14:", options: ["Concave down — confirms a maximum", "Concave up — confirms a minimum", "Concave down — confirms a minimum", "Concave up — confirms a maximum"], correctIndex: 0 },
+      { marks: 2, description: "What this means for the investment:", options: ["Growth is slowing (diminishing returns) as x increases toward this point", "Growth is accelerating as x increases", "Value is constant at this x", "Value is about to fall sharply"], correctIndex: 0 },
     ],
   },
   {
@@ -316,10 +315,10 @@ export const questions: QuestionSeed[] = [
     text: "Solve V(x) = 0 for x > 0, correct to two decimal places, and interpret the result in context.",
     marks: 4, topicKey: "logs_exponentials", cognitiveLevelName: "Proof & Synthesis",
     model_answer: "Solving 50 + 30 ln(x+1) − 2x = 0 numerically for x > 0 gives x ≈ 93.18 — beyond this point, the linear decay term overtakes the logarithmic growth term and the modelled value would turn negative.",
-    marking_notes: "Award marks for the correct numeric root and for a coherent interpretation (the point where the model's value turns negative).",
-    marking_points: [
-      { marks: 2, description: "Correct numeric root x ≈ 93.18", keywords: ["93 18", "93 2"] },
-      { marks: 2, description: "Interprets as the point where the modelled value turns negative", keywords: ["negative", "turns negative", "breaks down"] },
+    marking_notes: "Two steps: the numeric root, then the interpretation.",
+    steps: [
+      { marks: 2, description: "Root:", options: ["x ≈ 93.18", "x ≈ 85.00", "x ≈ 100.00", "x ≈ 75.00"], correctIndex: 0 },
+      { marks: 2, description: "Interpretation:", options: ["Beyond this point, the modelled value turns negative", "Beyond this point, the value is maximised", "This is where the investment breaks even on cost", "This is where growth is fastest"], correctIndex: 0 },
     ],
   },
 
@@ -354,10 +353,10 @@ export const questions: QuestionSeed[] = [
     text: "Find the vertical asymptote(s) of f(x) = ln(9 − x²), justifying your answer using limits.",
     marks: 4, topicKey: "curve_sketching", cognitiveLevelName: "Proof & Synthesis",
     model_answer: "As x → 3⁻ or x → −3⁺, 9−x² → 0⁺, so ln(9−x²) → −∞: vertical asymptotes at x = 3 and x = −3.",
-    marking_notes: "Award marks for identifying both asymptote locations and for correctly justifying with a limit argument.",
-    marking_points: [
-      { marks: 2, description: "States both vertical asymptotes x = 3 and x = −3", keywords: ["x 3", "x -3", "vertical asymptote"] },
-      { marks: 2, description: "Justifies via the limit: 9 − x² → 0⁺ so ln → −∞", keywords: ["approaches 0", "tends to 0", "negative infinity"] },
+    marking_notes: "Two steps: the asymptote locations, then the limit justification.",
+    steps: [
+      { marks: 2, description: "Vertical asymptote(s):", options: ["x = 3 and x = −3", "x = 0 only", "x = 9 and x = −9", "none"], correctIndex: 0 },
+      { marks: 2, description: "Justification:", options: ["9 − x² → 0⁺ as x approaches ±3 from inside the domain, so ln → −∞", "9 − x² → ∞, so ln → ∞", "9 − x² → 0⁻, so ln is undefined for a different reason", "The function has no vertical asymptotes"], correctIndex: 0 },
     ],
   },
   {
@@ -365,10 +364,10 @@ export const questions: QuestionSeed[] = [
     text: "Describe the shape of the graph of f(x) = ln(9 − x²), referring to your answers above.",
     marks: 4, topicKey: "curve_sketching", cognitiveLevelName: "Proof & Synthesis",
     model_answer: "A single symmetric hump: since f is even, the curve rises from −∞ (as x → −3⁺) to a maximum at x = 0 (f(0) = ln 9), then falls back to −∞ (as x → 3⁻).",
-    marking_notes: "Award marks for describing the symmetric hump shape and for correctly placing the maximum and both asymptotic falls.",
-    marking_points: [
-      { marks: 2, description: "Describes a single symmetric hump shape (even function, rises then falls)", keywords: ["symmetric", "even function", "hump"] },
-      { marks: 2, description: "Correctly places the maximum at x = 0 with the curve falling to −∞ at both vertical asymptotes", keywords: ["maximum at x 0", "falls to", "negative infinity at both"] },
+    marking_notes: "Two steps: the overall shape, then the maximum/asymptote behaviour.",
+    steps: [
+      { marks: 2, description: "Overall shape:", options: ["A single symmetric hump (even function)", "Two separate monotonic branches", "An always-increasing curve", "An always-decreasing curve"], correctIndex: 0 },
+      { marks: 2, description: "Behaviour at the maximum and asymptotes:", options: ["Rises to a maximum at x = 0, then falls to −∞ at both x = ±3", "Falls to a minimum at x = 0, then rises to +∞ at both x = ±3", "Rises to a maximum at x = 0 with no asymptotes", "Falls continuously from x = −3 to x = 3"], correctIndex: 0 },
     ],
   },
 
