@@ -9,6 +9,7 @@ import {
   getNextUnattemptedPaper,
   getNextExam,
   getNextExamDatesBySubject,
+  getExamsInRange,
 } from "@/lib/queries";
 import { getSubjectReadiness } from "@/lib/gap-analysis";
 import { startAttempt } from "@/app/actions";
@@ -49,6 +50,7 @@ export default async function DashboardPage() {
   const readiness = await getSubjectReadiness(user.id);
   const nextExam = await getNextExam();
   const nextExamDates = await getNextExamDatesBySubject();
+  const examsThisWeek = await getExamsInRange(7);
 
   // Ranks subjects by urgency, not just weakness: a subject with an
   // imminent exam should outrank one that's further from ready but not
@@ -89,18 +91,25 @@ export default async function DashboardPage() {
             <p className="font-[family-name:var(--font-display)] text-xl font-semibold">
               {greeting()}
             </p>
-            {nextExam && (
-              <span className="rounded-full bg-mark-red-soft px-3 py-1.5 font-mono text-xs text-mark-red">
-                {daysUntil(nextExam.examDate)} days to {nextExam.subjectName}{" "}
-                {nextExam.paperNumber} ({nextExam.examType === "final" ? "Final" : "Prelim"}) ·{" "}
-                {new Date(nextExam.examDate + "T00:00:00").toLocaleDateString("en-ZA", {
-                  weekday: "short",
-                  day: "numeric",
-                  month: "short",
-                })}
-                {nextExam.startTime && ` · ${nextExam.startTime.slice(0, 5)}`}
-              </span>
-            )}
+            <div className="flex flex-wrap items-center justify-end gap-2">
+              {(examsThisWeek.length > 0 ? examsThisWeek : nextExam ? [nextExam] : []).map(
+                (exam) => (
+                  <span
+                    key={`${exam.subjectId}-${exam.paperNumber}-${exam.examType}`}
+                    className="rounded-full bg-mark-red-soft px-3 py-1.5 font-mono text-xs text-mark-red"
+                  >
+                    {daysUntil(exam.examDate)} days to {exam.subjectName}{" "}
+                    {exam.paperNumber} ({exam.examType === "final" ? "Final" : "Prelim"}) ·{" "}
+                    {new Date(exam.examDate + "T00:00:00").toLocaleDateString("en-ZA", {
+                      weekday: "short",
+                      day: "numeric",
+                      month: "short",
+                    })}
+                    {exam.startTime && ` · ${exam.startTime.slice(0, 5)}`}
+                  </span>
+                ),
+              )}
+            </div>
           </div>
 
           <div className="mb-2 flex items-baseline justify-between">
