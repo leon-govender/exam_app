@@ -1105,13 +1105,18 @@ export const questions: QuestionSeed[] = [
   },
 ];
 
-// No exam_schedule entries here — Physical Sciences exam dates aren't
-// modelled in this ingestion; a future pilot dataset can carry them the way
-// geography-p1-pilot does for Geography.
+// Prelim: Parktown Boys' High School Preparatory Examination Timetable 2026.
+// Final: official DBE October/November 2026 NSC Examinations Timetable (Feb 2026) —
+// P1 is Physics, P2 is Chemistry.
 export const examSchedule: {
   paperNumber: string;
   examType: "prelim" | "final";
   examDate: string;
   startTime: string;
   durationMinutes: number;
-}[] = [];
+}[] = [
+  { paperNumber: "P1", examType: "prelim", examDate: "2026-09-04", startTime: "09:00", durationMinutes: 180 },
+  { paperNumber: "P2", examType: "prelim", examDate: "2026-09-11", startTime: "09:00", durationMinutes: 180 },
+  { paperNumber: "P1", examType: "final", examDate: "2026-10-30", startTime: "09:00", durationMinutes: 180 },
+  { paperNumber: "P2", examType: "final", examDate: "2026-11-02", startTime: "09:00", durationMinutes: 180 },
+];
