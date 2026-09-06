@@ -154,6 +154,41 @@ export async function getNextExamDatesBySubject(): Promise<Record<string, string
   return dates;
 }
 
+/** Every exam_schedule entry landing within the next `days` days (inclusive of today). */
+export async function getExamsInRange(days: number): Promise<UpcomingExam[]> {
+  const supabase = await createClient();
+  const today = new Date();
+  const todayStr = today.toISOString().slice(0, 10);
+  const end = new Date(today);
+  end.setDate(end.getDate() + days);
+  const endStr = end.toISOString().slice(0, 10);
+
+  const { data, error } = await supabase
+    .from("exam_schedule")
+    .select("subject_id, paper_number, exam_type, exam_date, start_time")
+    .gte("exam_date", todayStr)
+    .lte("exam_date", endStr)
+    .order("exam_date", { ascending: true })
+    .order("start_time", { ascending: true });
+  if (error) throw error;
+  if (!data || data.length === 0) return [];
+
+  const { data: subjects } = await supabase
+    .from("subjects")
+    .select("id, name")
+    .in("id", [...new Set(data.map((row) => row.subject_id))]);
+  const names = new Map((subjects ?? []).map((s) => [s.id, s.name]));
+
+  return data.map((row) => ({
+    subjectId: row.subject_id,
+    subjectName: names.get(row.subject_id) ?? "",
+    paperNumber: row.paper_number,
+    examType: row.exam_type,
+    examDate: row.exam_date,
+    startTime: row.start_time,
+  }));
+}
+
 export async function getPaperWithQuestions(paperId: string) {
   const supabase = await createClient();
   const { data: paper, error: paperErr } = await supabase

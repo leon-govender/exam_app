@@ -625,10 +625,17 @@ HOW AFRICA IS GIVING FAST-FOOD A NEW SPIN
   },
 ];
 
+// Prelim: Parktown Boys' High School Preparatory Examination Timetable 2026.
+// Final: official DBE October/November 2026 NSC Examinations Timetable (Feb 2026).
 export const examSchedule: {
   paperNumber: string;
   examType: "prelim" | "final";
   examDate: string;
   startTime: string;
   durationMinutes: number;
-}[] = [];
+}[] = [
+  { paperNumber: "P1", examType: "prelim", examDate: "2026-09-14", startTime: "09:00", durationMinutes: 120 },
+  { paperNumber: "P2", examType: "prelim", examDate: "2026-09-03", startTime: "09:00", durationMinutes: 150 },
+  { paperNumber: "P1", examType: "final", examDate: "2026-10-28", startTime: "09:00", durationMinutes: 120 },
+  { paperNumber: "P2", examType: "final", examDate: "2026-11-19", startTime: "09:00", durationMinutes: 150 },
+];
