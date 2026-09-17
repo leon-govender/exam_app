@@ -87,16 +87,16 @@ export default async function DashboardPage() {
         >
           <FrameChrome />
           <div className="p-6 sm:p-8">
-          <div className="mb-8 flex flex-wrap items-center justify-between gap-3">
+          <div className="mb-8 flex flex-col gap-3">
             <p className="font-[family-name:var(--font-display)] text-xl font-semibold">
               {greeting()}
             </p>
-            <div className="flex flex-wrap items-center justify-end gap-2">
+            <div className="flex flex-col gap-2">
               {(examsThisWeek.length > 0 ? examsThisWeek : nextExam ? [nextExam] : []).map(
                 (exam) => (
                   <span
                     key={`${exam.subjectId}-${exam.paperNumber}-${exam.examType}`}
-                    className="rounded-full bg-mark-red-soft px-3 py-1.5 font-mono text-xs text-mark-red"
+                    className="flex items-center justify-center rounded-full bg-mark-red-soft px-3 py-1.5 text-center font-mono text-xs text-mark-red"
                   >
                     {daysUntil(exam.examDate)} days to {exam.subjectName}{" "}
                     {exam.paperNumber} ({exam.examType === "final" ? "Final" : "Prelim"}) ·{" "}
