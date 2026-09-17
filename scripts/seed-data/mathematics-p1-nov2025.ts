@@ -27,9 +27,10 @@
 // errors — sign slips, wrong root selected, quotient-vs-product-rule mix
 // ups, arithmetic slips, forgetting a domain restriction, off-by-one
 // errors in sequence indices, etc. — not just random wrong numbers.
-// `marking_points` (free-text) is used only for the small number of
-// genuinely non-computational parts: 4.5 (sketch a graph — graded on the
-// features it must show) and 6.3 (describe a transformation in words).
+// `marking_points` (free-text) is used only for 4.5 (sketch a graph —
+// graded on the features it must show, which isn't reducible to a
+// multiple-choice pick). 6.3 (describe a transformation in words) was
+// originally free-text too but is now a stepped MCQ, like everything else.
 //
 // Where the memo shows an OR/alternative method, the steps below are based
 // on the FIRST/primary method shown in the memo, per this app's ingestion
@@ -505,7 +506,10 @@ export const questions: QuestionSeed[] = [
     marks: 2, topicKey: "functions", cognitiveLevelName: "Complex Procedures",
     model_answer: "A translation of 1 unit down (equivalently, a translation of 1 unit to the right also works, since both move g through the centre of the hyperbola f).",
     marking_notes: "Accept either valid transformation described in the memo: a translation of 1 unit down, or a translation of 1 unit to the right.",
-    marking_points: [{ marks: 2, description: "translation of 1 unit down, or equivalently a translation of 1 unit to the right", keywords: ["1 unit down", "one unit down", "1 unit right", "one unit right"] }],
+    steps: [
+      { marks: 1, description: "For g to become an axis of symmetry of f, it must pass through f's centre of symmetry (p ; q). Which single transformation of g achieves this?", options: ["A translation of 1 unit down (or equivalently 1 unit to the right)", "A translation of 1 unit up", "A reflection in the x-axis", "A rotation of 90° about the origin"], correctIndex: 0 },
+      { marks: 1, description: "Why does this particular translation make g cut f at two points instead of just touching it once?", options: ["It moves g through the centre of the hyperbola, so the line now crosses both branches of f", "It makes g steeper than f's asymptote", "It moves g parallel to f's vertical asymptote so they never meet", "It changes the gradient of g to match f's"], correctIndex: 0 },
+    ],
   },
 
   // ============ QUESTION 7: FINANCE, GROWTH AND DECAY (15 marks) ============
