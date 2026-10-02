@@ -7,9 +7,8 @@ import {
   getCurrentUser,
   getSubjects,
   getNextUnattemptedPaper,
-  getNextExam,
   getNextExamDatesBySubject,
-  getExamsInRange,
+  getNextExamPerSubject,
 } from "@/lib/queries";
 import { getSubjectReadiness } from "@/lib/gap-analysis";
 import { startAttempt } from "@/app/actions";
@@ -48,9 +47,8 @@ export default async function DashboardPage() {
 
   const subjects = await getSubjects();
   const readiness = await getSubjectReadiness(user.id);
-  const nextExam = await getNextExam();
   const nextExamDates = await getNextExamDatesBySubject();
-  const examsThisWeek = await getExamsInRange(7);
+  const upcomingPerSubject = await getNextExamPerSubject();
 
   // Ranks subjects by urgency, not just weakness: a subject with an
   // imminent exam should outrank one that's further from ready but not
@@ -92,7 +90,7 @@ export default async function DashboardPage() {
               {greeting()}
             </p>
             <div className="flex flex-col gap-2">
-              {(examsThisWeek.length > 0 ? examsThisWeek : nextExam ? [nextExam] : []).map(
+              {upcomingPerSubject.map(
                 (exam) => (
                   <span
                     key={`${exam.subjectId}-${exam.paperNumber}-${exam.examType}`}
