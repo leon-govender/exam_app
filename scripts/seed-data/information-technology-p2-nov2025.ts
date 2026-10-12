@@ -1067,13 +1067,18 @@ export const questions: QuestionSeed[] = [
   },
 ];
 
-// No exam_schedule entries here, matching the Mathematics/Physical Sciences
-// ingestion convention — this paper's real NSC exam dates are not modelled
-// in this ingestion.
+// Final dates: official DBE October/November
+// 2026 NSC Examinations Timetable (Feb 2026) — IT P1 Practical is Wed 14/10
+// at 09:00 and IT P2 Theory is Wed 21/10 in the 14:00 session. Both are
+// scheduled so the dashboard countdown works, although only P2 (Theory) is
+// ingested as questions; the practical P1 is a programming paper.
 export const examSchedule: {
   paperNumber: string;
   examType: "prelim" | "final";
   examDate: string;
   startTime: string;
   durationMinutes: number;
-}[] = [];
+}[] = [
+  { paperNumber: "P1", examType: "final", examDate: "2026-10-14", startTime: "09:00", durationMinutes: 180 },
+  { paperNumber: "P2", examType: "final", examDate: "2026-10-21", startTime: "14:00", durationMinutes: 180 },
+];

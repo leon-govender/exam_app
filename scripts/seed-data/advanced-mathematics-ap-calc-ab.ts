@@ -432,7 +432,8 @@ export const questions: QuestionSeed[] = [
 ];
 
 // Advanced Mathematics maps to "Further Studies Mathematics" on the school
-// timetable. From Parktown Boys' High School Preparatory Examination Timetable 2026.
+// timetable, but is not an NSC subject so it has no final exam date. Its school
+// prelim dates were removed, so it has no schedule entries.
 export const examSchedule: {
   paperNumber: string;
   examType: "prelim" | "final";
@@ -440,6 +441,4 @@ export const examSchedule: {
   startTime: string;
   durationMinutes: number;
 }[] = [
-  { paperNumber: "P1", examType: "prelim", examDate: "2026-09-21", startTime: "09:00", durationMinutes: 120 },
-  { paperNumber: "P2", examType: "prelim", examDate: "2026-09-21", startTime: "12:30", durationMinutes: 60 },
 ];
