@@ -59,6 +59,11 @@ import * as afrikaansFalP1Nov2022 from "./seed-data/afrikaans-fal-p1-nov2022";
 import * as afrikaansFalP1Nov2023 from "./seed-data/afrikaans-fal-p1-nov2023";
 import * as afrikaansFalP1Nov2024 from "./seed-data/afrikaans-fal-p1-nov2024";
 import * as afrikaansFalP1Nov2025 from "./seed-data/afrikaans-fal-p1-nov2025";
+import * as physicalSciencesP1Nov2008 from "./seed-data/physical-sciences-p1-nov2008";
+import * as physicalSciencesP1Nov2009 from "./seed-data/physical-sciences-p1-nov2009";
+import * as physicalSciencesP1Nov2010 from "./seed-data/physical-sciences-p1-nov2010";
+import * as physicalSciencesP1Nov2017 from "./seed-data/physical-sciences-p1-nov2017";
+import * as physicalSciencesP1Nov2018 from "./seed-data/physical-sciences-p1-nov2018";
 import * as informationTechnologyP2Nov2021 from "./seed-data/information-technology-p2-nov2021";
 import * as informationTechnologyP2Nov2022 from "./seed-data/information-technology-p2-nov2022";
 import * as informationTechnologyP2Nov2023 from "./seed-data/information-technology-p2-nov2023";
@@ -67,7 +72,7 @@ import * as physicalSciencesP1Nov2014 from "./seed-data/physical-sciences-p1-nov
 import * as physicalSciencesP1Nov2015 from "./seed-data/physical-sciences-p1-nov2015";
 import * as physicalSciencesP1Nov2016 from "./seed-data/physical-sciences-p1-nov2016";
 
-const datasets = [geographyP1Pilot, geographyP1Nov2025, geographyP1Prelim2023, geographyP2Prelim2023, geographyP1Prelim2024, geographyP2Prelim2024, geographyP2Nov2025, geographyP1Nov2024, geographyP2Nov2024, physicalSciencesP1Nov2025, physicalSciencesP1Nov2024, physicalSciencesP2Nov2025, physicalSciencesP2Nov2024, physicalSciencesP1Prelim2023, physicalSciencesP2Prelim2023, physicalSciencesP2Prelim2024, mathematicsP1Nov2025, mathematicsP2Nov2025, mathematicsP1Nov2023, mathematicsP2Nov2023, mathematicsP1Nov2024, mathematicsP2Nov2024, mathematicsP1Nov2022, mathematicsP2Nov2022, advancedMathematicsApCalcAb, advancedMathematicsIbAaHl, advancedMathematicsApCalcAbPracticeB, advancedMathematicsIbAaHlPracticeB, advancedMathematicsApCalcAbPracticeC, advancedMathematicsApCalcAbPracticeD, advancedMathematicsApCalcAbPracticeE, englishHlP1Nov2023, englishHlP1Nov2024, englishHlP1Nov2025, englishHlP2Nov2023, englishHlP2Nov2024, englishHlP2Nov2025, informationTechnologyP2Nov2025, physicalSciencesP1Nov2019, physicalSciencesP1Nov2022, physicalSciencesP1Nov2011, physicalSciencesP1Nov2012, physicalSciencesP1Nov2013, physicalSciencesP1Nov2020, physicalSciencesP1Nov2021, physicalSciencesP1Nov2014, physicalSciencesP1Nov2015, physicalSciencesP1Nov2016, afrikaansFalP1Nov2022, afrikaansFalP1Nov2023, afrikaansFalP1Nov2024, afrikaansFalP1Nov2025, afrikaansFalP1Nov2021, afrikaansFalP2Nov2021, afrikaansFalP2Nov2022, afrikaansFalP2Nov2023, afrikaansFalP2Nov2024, afrikaansFalP2Nov2025, informationTechnologyP2Nov2021, informationTechnologyP2Nov2022, informationTechnologyP2Nov2023, informationTechnologyP2Nov2024];
+const datasets = [geographyP1Pilot, geographyP1Nov2025, geographyP1Prelim2023, geographyP2Prelim2023, geographyP1Prelim2024, geographyP2Prelim2024, geographyP2Nov2025, geographyP1Nov2024, geographyP2Nov2024, physicalSciencesP1Nov2025, physicalSciencesP1Nov2024, physicalSciencesP2Nov2025, physicalSciencesP2Nov2024, physicalSciencesP1Prelim2023, physicalSciencesP2Prelim2023, physicalSciencesP2Prelim2024, mathematicsP1Nov2025, mathematicsP2Nov2025, mathematicsP1Nov2023, mathematicsP2Nov2023, mathematicsP1Nov2024, mathematicsP2Nov2024, mathematicsP1Nov2022, mathematicsP2Nov2022, advancedMathematicsApCalcAb, advancedMathematicsIbAaHl, advancedMathematicsApCalcAbPracticeB, advancedMathematicsIbAaHlPracticeB, advancedMathematicsApCalcAbPracticeC, advancedMathematicsApCalcAbPracticeD, advancedMathematicsApCalcAbPracticeE, englishHlP1Nov2023, englishHlP1Nov2024, englishHlP1Nov2025, englishHlP2Nov2023, englishHlP2Nov2024, englishHlP2Nov2025, informationTechnologyP2Nov2025, physicalSciencesP1Nov2019, physicalSciencesP1Nov2022, physicalSciencesP1Nov2011, physicalSciencesP1Nov2012, physicalSciencesP1Nov2013, physicalSciencesP1Nov2020, physicalSciencesP1Nov2021, physicalSciencesP1Nov2014, physicalSciencesP1Nov2015, physicalSciencesP1Nov2016, afrikaansFalP1Nov2022, afrikaansFalP1Nov2023, afrikaansFalP1Nov2024, afrikaansFalP1Nov2025, afrikaansFalP1Nov2021, afrikaansFalP2Nov2021, afrikaansFalP2Nov2022, afrikaansFalP2Nov2023, afrikaansFalP2Nov2024, afrikaansFalP2Nov2025, informationTechnologyP2Nov2021, informationTechnologyP2Nov2022, informationTechnologyP2Nov2023, informationTechnologyP2Nov2024, physicalSciencesP1Nov2008, physicalSciencesP1Nov2009, physicalSciencesP1Nov2010, physicalSciencesP1Nov2017, physicalSciencesP1Nov2018];
 
 // Shape shared by every seed-data file. `marking_points` (free-text grading)
 // and `steps` (stepped-MCQ grading) are mutually exclusive per question, but
@@ -341,11 +346,18 @@ async function main() {
   }
   const supabase = createClient(url, key, { auth: { persistSession: false } });
 
-  // Optional: SEED_ONLY="afrikaans" seeds just the datasets whose subject
-  // name contains that text (the full run is slow now that there are 70+).
-  const only = process.env.SEED_ONLY?.toLowerCase();
+  // Optional: SEED_ONLY limits the run (the full run is slow now that there
+  // are 90+ datasets). Separate terms with "|"; a dataset runs if ALL words of
+  // any one term appear in "<subject> <year> <paper> <diet>", e.g.
+  // SEED_ONLY="afrikaans" or "physical sciences 2012 p2|physical sciences 2014 p2".
+  const only = process.env.SEED_ONLY?.toLowerCase()
+    .split("|")
+    .map((t) => t.trim().split(/\s+/))
+    .filter((words) => words[0]);
   for (const ds of datasets) {
-    if (only && !ds.subject.name.toLowerCase().includes(only)) continue;
+    const label =
+      `${ds.subject.name} ${ds.paper.year} ${ds.paper.paper_number} ${ds.paper.exam_diet}`.toLowerCase();
+    if (only && !only.some((words) => words.every((w) => label.includes(w)))) continue;
     await seedDataset(supabase, ds);
   }
 
