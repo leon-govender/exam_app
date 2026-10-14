@@ -635,4 +635,5 @@ export const examSchedule: {
 }[] = [
   { paperNumber: "P1", examType: "final", examDate: "2026-10-28", startTime: "09:00", durationMinutes: 120 },
   { paperNumber: "P2", examType: "final", examDate: "2026-11-19", startTime: "09:00", durationMinutes: 150 },
+  { paperNumber: "P3", examType: "final", examDate: "2026-10-15", startTime: "09:00", durationMinutes: 180 },
 ];

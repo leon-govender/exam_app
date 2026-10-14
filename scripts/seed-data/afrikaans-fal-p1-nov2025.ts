@@ -107,7 +107,20 @@ export const paper = {
   source_url: "https://stanmorephysics.com/wp-content/uploads/2026/04/NSC-Afrikaans-FAL-Grade-12-November-2025-P1-and-Memo.pdf" as string | null,
 };
 
-export const examSchedule: { paperNumber: string; examType: "prelim" | "final"; examDate: string; startTime: string; durationMinutes: number; }[] = [];
+// Final dates: official DBE October/November 2026 NSC Examinations Timetable
+// (Feb 2026). This one file carries the subject's whole schedule; every other
+// Afrikaans FAL file leaves examSchedule empty.
+export const examSchedule: {
+  paperNumber: string;
+  examType: "prelim" | "final";
+  examDate: string;
+  startTime: string;
+  durationMinutes: number;
+}[] = [
+  { paperNumber: "P3", examType: "final", examDate: "2026-10-20", startTime: "09:00", durationMinutes: 150 },
+  { paperNumber: "P1", examType: "final", examDate: "2026-11-11", startTime: "09:00", durationMinutes: 120 },
+  { paperNumber: "P2", examType: "final", examDate: "2026-11-20", startTime: "09:00", durationMinutes: 150 },
+];
 
 interface QuestionSeed {
   number: string;
